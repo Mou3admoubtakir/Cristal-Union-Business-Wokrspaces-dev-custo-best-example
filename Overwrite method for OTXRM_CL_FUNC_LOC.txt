@@ -1,0 +1,348 @@
+Overwrite method for /OTX/RM_CL_FUNC_LOC => get_properties
+
+METHOD IOW_ZEXT_RM_PM_CL_PP_FUNC_LOC~GET_PROPERTIES.
+*"------------------------------------------------------------------------*
+*" Declaration of Overwrite-method, do not insert any comments here please!
+*"
+*"methods GET_PROPERTIES
+*"  importing
+*"    !PIT_BOR type /OTX/RM_WSCI_TT_BOR
+*"  exporting
+*"    !PET_BOR_PROPERTIES type /OTX/RM_WSCI_TT_BOR_PROPERTIES
+*"  raising
+*"    /OTX/CX_RM_WSCI_WSPROVIDER .
+*"------------------------------------------------------------------------*
+
+DATA: BEGIN OF ls_iflot,
+          trpnr TYPE iflot-trpnr,
+          ematn TYPE iflot-ematn,
+          serge TYPE iflot-serge,
+        END OF ls_iflot.
+
+  DATA:
+    l_error_msg         TYPE string,
+    l_id                TYPE /otx/rm_pm_cl_constants=>typ_func_loc_key,
+    ls_funcloc_general  TYPE bapi_itob,
+    ls_funcloc_specific TYPE bapi_itob_fl_only,
+    ls_funcloc_return   TYPE bapiret2,
+    ls_adrc             TYPE adrc,
+    ls_parent           TYPE /otx/rm_wsci_s_bor,
+    lt_attr_defs        TYPE /otx/rm_wsci_tt_attr_def,
+    ls_attr_def         TYPE /otx/rm_wsci_s_attr_def,
+    ls_prop             TYPE LINE OF /otx/rm_wsci_tt_properties,
+    l_utc_string        TYPE string,
+    l_tplnr_external    TYPE ilom_strno,
+    ls_rcr01            TYPE rcr01,
+    l_value             TYPE string,
+    ls_child            TYPE /otx/rm_wsci_s_bor,
+    ls_tli_key          TYPE /otx/rm_pm_cl_constants=>typ_tli_key.
+
+  DATA: BEGIN OF ls_warranty,
+         gaart TYPE gaart,
+         ktext TYPE txt40,
+         mganr TYPE mganr,
+        END OF ls_warranty,
+        lt_warranty LIKE STANDARD TABLE OF ls_warranty,
+        lt_values_row       TYPE /otx/rm_tt_stringmatrix,
+        lt_values           TYPE /otx/rm_tt_stringtab.
+
+  DATA: BEGIN OF ls_stat_range,
+          sign   TYPE c LENGTH 1,
+          option TYPE c LENGTH 2,
+          low    TYPE plko-statu,
+          high   TYPE plko-statu,
+        END OF ls_stat_range,
+        lt_stat_range LIKE STANDARD TABLE OF ls_stat_range.
+
+  DATA: BEGIN OF ls_const_range,
+          sign   TYPE c LENGTH 1,
+          option TYPE c LENGTH 2,
+          low    TYPE plko-istru,
+          high   TYPE plko-istru,
+        END OF ls_const_range,
+        lt_const_range LIKE STANDARD TABLE OF ls_const_range.
+
+  DATA : lt_sel_tab TYPE STANDARD TABLE OF rihplko,
+         ls_sel_tab TYPE rihplko,
+         lt_stpo    TYPE STANDARD TABLE OF rihstpx,
+         l_stpo     TYPE rihstpx,
+         l_plnst    TYPE t412-plnst.
+
+CONSTANTS : c_false type ABAP_BOOL value ABAP_FALSE.
+
+  FIELD-SYMBOLS:
+    <ls_bor_properties> TYPE /otx/rm_wsci_s_bor_properties.
+
+*  ME->CORE_OBJECT = CORE_OBJECT.
+  CALL METHOD CORE_OBJECT->l_rm_wsci_cl_wsprov_default->get_properties
+    EXPORTING
+      pit_bor            = pit_bor
+    IMPORTING
+      pet_bor_properties = pet_bor_properties.
+
+  CALL METHOD CORE_OBJECT->get_property_defs
+    IMPORTING
+      pet_attr_defs = lt_attr_defs.
+
+  ls_stat_range-sign = 'I'.
+  ls_stat_range-option = 'EQ'.
+  SELECT plnst INTO l_plnst
+               FROM t412
+              WHERE freif = /otx/rm_pm_cl_constants=>c_true.
+    ls_stat_range-low = l_plnst.
+    APPEND ls_stat_range TO lt_stat_range.
+  ENDSELECT.
+
+  " Goes through each given BOR.
+  LOOP AT pet_bor_properties ASSIGNING <ls_bor_properties>.
+
+    " Gets the details.
+    l_id = <ls_bor_properties>-bor-id.
+    CLEAR: ls_funcloc_general, ls_funcloc_specific, ls_funcloc_return.
+    CALL FUNCTION 'BAPI_FUNCLOC_GETDETAIL'
+      EXPORTING
+        functlocation     = l_id
+      IMPORTING
+        data_general_exp  = ls_funcloc_general
+        data_specific_exp = ls_funcloc_specific
+        return            = ls_funcloc_return.
+
+    IF ls_funcloc_return-type EQ CORE_OBJECT->c_bapi_err OR
+       ls_funcloc_return-type EQ 'A'.
+
+      l_error_msg = ls_funcloc_return-message.
+      CREATE OBJECT <ls_bor_properties>-exception
+        EXPORTING
+          m_error_text = l_error_msg.
+      CONTINUE.
+    ENDIF.
+
+    CLEAR ls_iflot.
+    SELECT SINGLE trpnr ematn serge
+      INTO (ls_iflot-trpnr, ls_iflot-ematn, ls_iflot-serge)
+      FROM iflot
+      WHERE tplnr = l_id.
+
+    CLEAR lt_stpo.
+    CALL FUNCTION 'PM_HIERARCHY_CALL_BOM_IFLO'
+      EXPORTING
+        levdo           = 99
+        selmod          = 'D'
+        stkkz           = /otx/rm_pm_cl_constants=>c_true
+        tplnr           = l_id
+      TABLES
+        stpo_tab        = lt_stpo
+      EXCEPTIONS
+        no_hierarchy    = 01
+        no_selection    = 02
+        no_valid_tplnr  = 03
+        no_valid_selmod = 04.
+
+    IF NOT sy-subrc IS INITIAL.
+*If fails no fatal error, therefore continue
+*      MESSAGE ID sy-msgid TYPE sy-msgty NUMBER sy-msgno
+*              WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4
+*              INTO l_error_msg.
+*      CREATE OBJECT <ls_bor_properties>-exception
+*        EXPORTING
+*          m_error_text = l_error_msg.
+*      CONTINUE.
+    ENDIF.
+
+    CLEAR lt_const_range.
+    ls_const_range-sign   = 'I'.
+    ls_const_range-option = 'EQ'.
+    LOOP AT lt_stpo INTO l_stpo.
+      ls_const_range-low    = l_stpo-idnrk.
+      APPEND ls_const_range TO lt_const_range.
+*Add Material relation
+      ls_child-type = /otx/rm_pm_cl_constants=>c_bo_material_super.
+      ls_child-id = ls_const_range-low.
+      APPEND ls_child TO <ls_bor_properties>-children.
+    ENDLOOP.
+
+    CLEAR lt_sel_tab.
+    SUBMIT riplko10 AND RETURN
+      WITH dy_tcode = 'IA09'
+      WITH pn_datuv = sy-datum
+      WITH dy_selm  = 'D'
+      WITH op_strat = space
+      WITH pn_ihan  = c_false
+      with pn_iflo  = /otx/rm_pm_cl_constants=>c_true
+      with PN_STRNO = l_id
+      WITH ind_stat = /otx/rm_pm_cl_constants=>c_true
+      WITH statu    IN lt_stat_range
+      WITH istru    IN lt_const_range.
+    IMPORT sel_tab = lt_sel_tab FROM MEMORY ID 'RIPLKO10'.
+
+*Relations to task lists
+    LOOP AT lt_sel_tab INTO ls_sel_tab.
+      IF NOT ls_sel_tab-plnnr IS INITIAL.
+        ls_child-type = /otx/rm_pm_cl_constants=>c_bo_tasklist_super.
+        ls_tli_key-plnty  = ls_sel_tab-plnty.
+        ls_tli_key-plnnr  = ls_sel_tab-plnnr.
+        ls_tli_key-plnal  = ls_sel_tab-plnal.
+        ls_child-id = ls_tli_key.
+        APPEND ls_child TO <ls_bor_properties>-children.
+      ENDIF.
+    ENDLOOP.
+
+*Get warranties
+    SELECT bgmkobj~gaart ktext bgmkobj~mganr
+      INTO TABLE lt_warranty
+      FROM iflot
+      INNER JOIN bgmkobj ON bgmkobj~j_objnr = iflot~tplnr
+      INNER JOIN t790g_t ON t790g_t~gaart = bgmkobj~gaart
+      WHERE iflot~tplnr = l_id
+        AND t790g_t~langu = sy-langu.
+
+    " Convert internal Function Location ID to external ID
+    CALL FUNCTION 'CONVERSION_EXIT_TPLNR_OUTPUT'
+      EXPORTING
+        input  = l_id
+      IMPORTING
+        output = l_tplnr_external.
+
+
+    " Gets the address.
+    CLEAR ls_adrc.
+    SELECT SINGLE * FROM adrc INTO ls_adrc
+      WHERE addrnumber = ls_funcloc_general-read_adrnr.     "#EC *
+
+    " Sets the parent functional location, if any.
+    IF ls_funcloc_specific-supfloc IS NOT INITIAL.
+      ls_parent-type = /otx/rm_pm_cl_constants=>c_bo_func_loc_super.
+      ls_parent-id = ls_funcloc_specific-supfloc.
+      APPEND ls_parent TO <ls_bor_properties>-parents.
+    ENDIF.
+
+
+    " Gets the properties.
+    LOOP AT lt_attr_defs INTO ls_attr_def.
+
+      CLEAR ls_prop.
+      ls_prop-def = ls_attr_def.
+
+      CASE ls_attr_def-key.
+
+        WHEN CORE_OBJECT->c_attr_name_tplnr.
+          APPEND l_tplnr_external TO ls_prop-values.
+
+        WHEN CORE_OBJECT->c_attr_name_category.
+          APPEND ls_funcloc_specific-category TO ls_prop-values.
+
+        WHEN CORE_OBJECT->c_attr_name_creation_date.
+          l_utc_string =
+            CORE_OBJECT->convert_dats_to_string( ls_funcloc_general-read_crdat ).
+          APPEND l_utc_string TO ls_prop-values.
+
+        WHEN CORE_OBJECT->c_attr_name_location_name.
+          APPEND ls_adrc-name1 TO ls_prop-values.
+
+        WHEN CORE_OBJECT->c_attr_name_location_street.
+          APPEND ls_adrc-street TO ls_prop-values.
+
+        WHEN CORE_OBJECT->c_attr_name_location_city.
+          APPEND ls_adrc-city1 TO ls_prop-values.
+
+        WHEN CORE_OBJECT->c_attr_name_location_pcode.
+          APPEND ls_adrc-post_code1 TO ls_prop-values.
+
+        WHEN CORE_OBJECT->c_attr_name_location_country.
+          APPEND ls_adrc-country TO ls_prop-values.
+
+        WHEN CORE_OBJECT->c_attr_name_plan_plant.
+          APPEND ls_funcloc_general-planplant TO ls_prop-values.
+
+        WHEN CORE_OBJECT->c_attr_name_plan_group.
+          APPEND ls_funcloc_general-plangroup TO ls_prop-values.
+
+        WHEN CORE_OBJECT->c_attr_name_desc.
+          APPEND ls_funcloc_general-descript TO ls_prop-values.
+
+        WHEN CORE_OBJECT->c_attr_name_objecttype.
+          APPEND ls_funcloc_general-objecttype TO ls_prop-values.
+
+        WHEN CORE_OBJECT->c_attr_name_abcindic.
+          APPEND ls_funcloc_general-abcindic TO ls_prop-values.
+
+        WHEN CORE_OBJECT->c_attr_name_sortfield.
+          APPEND ls_funcloc_general-sortfield TO ls_prop-values.
+
+        WHEN CORE_OBJECT->c_attr_name_work_ctr.
+          IF NOT ls_funcloc_general-work_ctr IS INITIAL.
+            CALL FUNCTION 'CR_WORKSTATION_READ'
+              EXPORTING
+                id        = ls_funcloc_general-work_ctr
+              IMPORTING
+                arbpl     = ls_rcr01-arbpl
+              EXCEPTIONS
+                not_found = 1
+                OTHERS    = 2.
+            IF sy-subrc <> 0.
+              l_error_msg =  'Could not find the work center for' &
+                 'ARBID = &1'.                              "#EC NOTEXT
+              REPLACE '&1' IN l_error_msg
+                         WITH ls_funcloc_general-work_ctr.
+              CREATE OBJECT <ls_bor_properties>-exception
+                EXPORTING
+                  m_error_text = l_error_msg.
+              EXIT.
+            ENDIF.
+            APPEND ls_rcr01-arbpl TO ls_prop-values.
+          ENDIF.
+
+        WHEN CORE_OBJECT->c_attr_name_consttype.
+          CALL FUNCTION 'CONVERSION_EXIT_ALPHA_OUTPUT'
+            EXPORTING
+              input  = ls_funcloc_general-consttype
+            IMPORTING
+              output = l_value.
+          CONDENSE l_value.
+          APPEND l_value TO ls_prop-values.
+
+        WHEN CORE_OBJECT->c_attr_name_manmodel.
+          APPEND ls_funcloc_general-manmodel TO ls_prop-values.
+
+        WHEN CORE_OBJECT->c_attr_name_ref_func_loc.
+          APPEND ls_iflot-trpnr TO ls_prop-values.
+
+        WHEN CORE_OBJECT->c_attr_name_ematn.
+          APPEND ls_iflot-ematn TO ls_prop-values.
+
+        WHEN CORE_OBJECT->c_attr_name_serge.
+          APPEND ls_iflot-serge TO ls_prop-values.
+
+        WHEN CORE_OBJECT->c_attr_name_warranty_set.
+
+          LOOP AT lt_warranty INTO ls_warranty.
+            CLEAR: lt_values_row, lt_values.
+            APPEND ls_warranty-gaart TO lt_values.
+            APPEND lt_values TO lt_values_row.
+
+            CLEAR lt_values.
+            APPEND ls_warranty-ktext TO lt_values.
+            APPEND lt_values TO lt_values_row.
+
+            CLEAR lt_values.
+            APPEND ls_warranty-mganr TO lt_values.
+            APPEND lt_values TO lt_values_row.
+
+            APPEND lt_values_row TO ls_prop-values_group.
+          ENDLOOP.
+
+        WHEN OTHERS.
+          " Maybe this property was already returned
+          " by the parent method.
+          CONTINUE.
+
+      ENDCASE.
+
+      APPEND ls_prop TO <ls_bor_properties>-properties.
+
+    ENDLOOP.
+
+  ENDLOOP.
+
+
+ENDMETHOD.
