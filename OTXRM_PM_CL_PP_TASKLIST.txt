@@ -1,0 +1,388 @@
+*----------- Include : /OTX/RM_PM_CL_PP_TASKLIST=====CCDEF
+*"* use this source file for any type declarations (class
+*"* definitions, interfaces or data types) you need for method
+*"* implementation or private method's signature
+
+*----------- Include : /OTX/RM_PM_CL_PP_TASKLIST=====CCMAC
+*"* use this source file for any macro definitions you need
+*"* in the implementation part of the class
+
+*----------- Include : /OTX/RM_PM_CL_PP_TASKLIST=====CCIMP
+*"* local class implementation for public class
+*"* use this source file for the implementation part of
+*"* local helper classes
+
+*----------- Include : /OTX/RM_PM_CL_PP_TASKLIST=====CU
+class /OTX/RM_PM_CL_PP_TASKLIST definition
+  public
+  inheriting from /OTX/RM_WSCI_CL_WSPROV_DEFAULT
+  final
+  create public .
+
+*"* public components of class /OTX/RM_PM_CL_PP_TASKLIST
+*"* do not include other source files here!!!
+public section.
+
+  data C_ATTR_NAME_PLNTY type STRING value 'PLNTY'. "#EC NOTEXT .
+  data C_ATTR_NAME_PLNNR type STRING value 'PLNNR'. "#EC NOTEXT .
+  data C_ATTR_NAME_PLNAL type STRING value 'PLNAL'. "#EC NOTEXT .
+  data C_ATTR_NAME_ZAEHL type STRING value 'ZAEHL'. "#EC NOTEXT .
+  data C_ATTR_NAME_KTEXT type STRING value 'KTEXT'. "#EC NOTEXT .
+  data C_ATTR_NAME_IWERK type STRING value 'IWERK'. "#EC NOTEXT .
+  data C_ATTR_NAME_ARBID type STRING value 'ARBID'. "#EC NOTEXT .
+  data C_ATTR_NAME_WERKS type STRING value 'WERKS'. "#EC NOTEXT .
+  data C_ATTR_NAME_ISTRU type STRING value 'ISTRU'. "#EC NOTEXT .
+  data C_ATTR_NAME_VERWE type STRING value 'VERWE'. "#EC NOTEXT .
+  data C_ATTR_NAME_VAGRP type STRING value 'VAGRP'. "#EC NOTEXT .
+  data C_ATTR_NAME_STRAT type STRING value 'STRAT'. "#EC NOTEXT .
+  data C_ATTR_NAME_LOEKZ type STRING value 'LOEKZ'. "#EC NOTEXT .
+
+  methods GET_PROPERTIES
+    redefinition .
+  methods GET_PROPERTY_DEFS
+    redefinition .
+*----------- Include : /OTX/RM_PM_CL_PP_TASKLIST=====CO
+*"* protected components of class /OTX/RM_PM_CL_PP_TASKLIST
+*"* do not include other source files here!!!
+protected section.
+*----------- Include : /OTX/RM_PM_CL_PP_TASKLIST=====CI
+*"* private components of class /OTX/RM_PM_CL_PP_TASKLIST
+*"* do not include other source files here!!!
+private section.
+*----------- Include : /OTX/RM_PM_CL_PP_TASKLIST=====CP
+class-pool .
+*"* class pool for class /OTX/RM_PM_CL_PP_TASKLIST
+
+*"* local type definitions
+include /OTX/RM_PM_CL_PP_TASKLIST=====ccdef.
+
+*"* class /OTX/RM_PM_CL_PP_TASKLIST definition
+*"* public declarations
+  include /OTX/RM_PM_CL_PP_TASKLIST=====cu.
+*"* protected declarations
+  include /OTX/RM_PM_CL_PP_TASKLIST=====co.
+*"* private declarations
+  include /OTX/RM_PM_CL_PP_TASKLIST=====ci.
+endclass. "/OTX/RM_PM_CL_PP_TASKLIST definition
+
+*"* macro definitions
+include /OTX/RM_PM_CL_PP_TASKLIST=====ccmac.
+*"* local class implementation
+include /OTX/RM_PM_CL_PP_TASKLIST=====ccimp.
+
+class /OTX/RM_PM_CL_PP_TASKLIST implementation.
+*"* method's implementations
+  include methods.
+endclass. "/OTX/RM_PM_CL_PP_TASKLIST implementation
+
+*----------- Include : /OTX/RM_PM_CL_PP_TASKLIST=====CT
+*"* dummy include to reduce generation dependencies between
+*"* class /OTX/RM_PM_CL_PP_TASKLIST and it's users.
+*"* touched if any type reference has been changed
+*----------- Include : /OTX/RM_PM_CL_PP_TASKLIST=====CM001
+METHOD get_property_defs.
+  super->get_property_defs(
+    EXPORTING
+      pi_disp_lang                   = sy-langu    " Language ID
+    IMPORTING
+      pet_attr_defs                  = pet_attr_defs
+      pet_allowed_parent_types       = pet_allowed_parent_types
+      pet_allowed_child_types        = pet_allowed_child_types
+      pet_allowed_ident_busobj_types = pet_allowed_ident_busobj_types
+      pet_allowed_parent_types_ext   = pet_allowed_parent_types_ext
+      pet_allowed_child_types_ext    = pet_allowed_child_types_ext
+  ).
+
+  DATA: ls_props    TYPE plko,
+        ls_attr_def LIKE LINE OF pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_props
+      pi_struct_attr = c_attr_name_ktext
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_props
+      pi_struct_attr = c_attr_name_iwerk
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_props
+      pi_struct_attr = c_attr_name_arbid
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_props
+      pi_struct_attr = c_attr_name_plnal
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_props
+      pi_struct_attr = c_attr_name_plnnr
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_props
+      pi_struct_attr = c_attr_name_plnty
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_props
+      pi_struct_attr = c_attr_name_zaehl
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_props
+      pi_struct_attr = c_attr_name_werks
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_props
+      pi_struct_attr = c_attr_name_istru
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_props
+      pi_struct_attr = c_attr_name_verwe
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_props
+      pi_struct_attr = c_attr_name_vagrp
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_props
+      pi_struct_attr = c_attr_name_strat
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_props
+      pi_struct_attr = c_attr_name_loekz
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+
+
+  APPEND /otx/rm_pm_cl_constants=>c_bo_tasklist_operation
+      TO pet_allowed_child_types.
+  APPEND /otx/rm_pm_cl_constants=>c_bo_material_super
+      TO pet_allowed_parent_types.
+
+ENDMETHOD.
+*----------- Include : /OTX/RM_PM_CL_PP_TASKLIST=====CM002
+METHOD get_properties.
+
+  DATA:
+    ls_child            TYPE /otx/rm_wsci_s_busobj,
+    ls_parent           TYPE /otx/rm_wsci_s_bor,
+    lt_attr_defs        TYPE /otx/rm_wsci_tt_attr_def,
+    ls_attr_def         TYPE /otx/rm_wsci_s_attr_def,
+    l_error_text        TYPE string,
+    ls_prop             TYPE LINE OF /otx/rm_wsci_tt_properties.
+
+  DATA: ls_tli_key  TYPE /otx/rm_pm_cl_constants=>typ_tli_key,
+        ls_tlo_key  TYPE /otx/rm_pm_cl_constants=>typ_tlo_key.
+
+  DATA: ls_plko     TYPE plko,
+        ls_plas     TYPE plas,
+        lt_plas     TYPE STANDARD TABLE OF plas,
+        ls_rcr01    TYPE rcr01,
+        l_value     TYPE string.
+
+  FIELD-SYMBOLS: <ls_bor_properties> TYPE /otx/rm_wsci_s_bor_properties.
+
+  CALL METHOD super->get_properties
+    EXPORTING
+      pit_bor            = pit_bor
+    IMPORTING
+      pet_bor_properties = pet_bor_properties.
+
+  CALL METHOD get_property_defs
+    IMPORTING
+      pet_attr_defs = lt_attr_defs.
+
+*Add properties
+  LOOP AT pet_bor_properties ASSIGNING <ls_bor_properties>.
+    ls_tli_key = <ls_bor_properties>-bor-id.
+
+    SELECT SINGLE * INTO ls_plko
+      FROM plko
+     WHERE plnty = ls_tli_key-plnty
+       AND plnnr = ls_tli_key-plnnr
+       AND plnal = ls_tli_key-plnal.
+    IF sy-subrc <> 0.
+      l_error_text =  'Could not find task list in table plko ' &
+         'with key plnty = &1, plnnr =  &2, plnal = &3'.    "#EC NOTEXT
+      REPLACE '&1' IN l_error_text WITH ls_tli_key-plnty.
+      REPLACE '&2' IN l_error_text WITH ls_tli_key-plnnr.
+      REPLACE '&3' IN l_error_text WITH ls_tli_key-plnal.
+      CREATE OBJECT <ls_bor_properties>-exception
+        EXPORTING
+          m_error_text = l_error_text.
+      CONTINUE.
+    ENDIF.
+
+    LOOP AT lt_attr_defs INTO ls_attr_def.
+      CLEAR ls_prop.
+      ls_prop-def = ls_attr_def.
+
+      CASE ls_attr_def-key.
+        WHEN c_attr_name_ktext.
+          APPEND ls_plko-ktext TO ls_prop-values.
+
+        WHEN c_attr_name_iwerk.
+          APPEND ls_plko-iwerk TO ls_prop-values.
+
+        WHEN c_attr_name_arbid.
+          IF NOT ls_plko-arbid IS INITIAL.
+            CALL FUNCTION 'CR_WORKSTATION_READ'
+              EXPORTING
+                id        = ls_plko-arbid
+              IMPORTING
+                arbpl     = ls_rcr01-arbpl
+              EXCEPTIONS
+                not_found = 1
+                OTHERS    = 2.
+            IF sy-subrc <> 0.
+              l_error_text =  'Could not find the work center for' &
+                 'ARBID = &1'.                              "#EC NOTEXT
+              REPLACE '&1' IN l_error_text WITH ls_plko-arbid.
+              CREATE OBJECT <ls_bor_properties>-exception
+                EXPORTING
+                  m_error_text = l_error_text.
+              EXIT.
+            ENDIF.
+            APPEND ls_rcr01-arbpl TO ls_prop-values.
+          ENDIF.
+
+        WHEN c_attr_name_plnal.
+          CALL FUNCTION 'CONVERSION_EXIT_ALPHA_OUTPUT'
+            EXPORTING
+              input  = ls_plko-plnal
+            IMPORTING
+              output = l_value.
+          CONDENSE l_value.
+          APPEND l_value TO ls_prop-values.
+
+        WHEN c_attr_name_plnnr.
+          CALL FUNCTION 'CONVERSION_EXIT_ALPHA_OUTPUT'
+            EXPORTING
+              input  = ls_plko-plnnr
+            IMPORTING
+              output = l_value.
+          CONDENSE l_value.
+          APPEND l_value TO ls_prop-values.
+
+        WHEN c_attr_name_plnty.
+          APPEND ls_plko-plnty TO ls_prop-values.
+
+        WHEN c_attr_name_zaehl.
+          APPEND ls_plko-zaehl TO ls_prop-values.
+
+        WHEN c_attr_name_werks.
+          APPEND ls_plko-werks TO ls_prop-values.
+
+        WHEN c_attr_name_istru.
+          APPEND ls_plko-istru TO ls_prop-values.
+
+        WHEN c_attr_name_verwe.
+          APPEND ls_plko-verwe TO ls_prop-values.
+
+        WHEN c_attr_name_vagrp.
+          APPEND ls_plko-vagrp TO ls_prop-values.
+
+        WHEN c_attr_name_strat.
+          APPEND ls_plko-strat TO ls_prop-values.
+
+        WHEN c_attr_name_loekz.
+          IF NOT ls_plko-loekz IS INITIAL.
+            APPEND '!' TO ls_prop-values.
+          ELSE.
+            APPEND ls_plko-loekz TO ls_prop-values.
+          ENDIF.
+
+        WHEN OTHERS.
+          " Maybe this property was already returned
+          " by the parent method.
+          CONTINUE.
+      ENDCASE.
+
+      APPEND ls_prop TO <ls_bor_properties>-properties.
+    ENDLOOP.
+
+*Add operations
+    SELECT plnty plnnr plnal plnkn FROM plas
+      INTO CORRESPONDING FIELDS OF TABLE lt_plas
+      WHERE plnty = ls_tli_key-plnty
+        AND plnnr = ls_tli_key-plnnr
+        AND plnal = ls_tli_key-plnal.
+    LOOP AT lt_plas INTO ls_plas.
+      ls_child-type = /otx/rm_pm_cl_constants=>c_bo_tasklist_operation.
+      ls_tlo_key-plnty = ls_plas-plnty.
+      ls_tlo_key-plnnr = ls_plas-plnnr.
+      ls_tlo_key-plnkn = ls_plas-plnkn.
+      ls_tlo_key-zaehl = ls_plas-plnkn.
+      ls_child-id   = ls_tlo_key.
+      APPEND ls_child TO <ls_bor_properties>-composite_children.
+    ENDLOOP.
+
+*Add material relations
+    IF NOT ls_plko-istru IS INITIAL.
+      ls_parent-type = /otx/rm_pm_cl_constants=>c_bo_material_super.
+      ls_parent-id = ls_plko-istru.
+      APPEND ls_parent TO <ls_bor_properties>-parents.
+    ENDIF.
+  ENDLOOP.
+ENDMETHOD.

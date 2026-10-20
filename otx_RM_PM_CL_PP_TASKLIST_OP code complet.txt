@@ -1,0 +1,537 @@
+*----------- Include : /OTX/RM_PM_CL_PP_TASKLIST_OP==CCDEF
+*"* use this source file for any type declarations (class
+*"* definitions, interfaces or data types) you need for method
+*"* implementation or private method's signature
+
+*----------- Include : /OTX/RM_PM_CL_PP_TASKLIST_OP==CCMAC
+*"* use this source file for any macro definitions you need
+*"* in the implementation part of the class
+
+*----------- Include : /OTX/RM_PM_CL_PP_TASKLIST_OP==CCIMP
+*"* local class implementation for public class
+*"* use this source file for the implementation part of
+*"* local helper classes
+
+*----------- Include : /OTX/RM_PM_CL_PP_TASKLIST_OP==CU
+class /OTX/RM_PM_CL_PP_TASKLIST_OP definition
+  public
+  inheriting from /OTX/RM_WSCI_CL_WSPROV_DEFAULT
+  final
+  create public .
+
+*"* public components of class /OTX/RM_PM_CL_PP_TASKLIST_OP
+*"* do not include other source files here!!!
+public section.
+  type-pools CSCL .
+
+  constants C_ATTR_NAME_VORNR type STRING value 'VORNR'. "#EC NOTEXT
+  constants C_ATTR_NAME_WERKS type STRING value 'WERKS'. "#EC NOTEXT
+  constants C_ATTR_NAME_ARBID type STRING value 'ARBID'. "#EC NOTEXT
+  constants C_ATTR_NAME_LTXA1 type STRING value 'LTXA1'. "#EC NOTEXT
+  constants C_ATTR_NAME_STEUS type STRING value 'STEUS'. "#EC NOTEXT
+  constants C_ATTR_NAME_SUMNR type STRING value 'SUMNR'. "#EC NOTEXT
+  constants C_ATTR_NAME_USR00 type STRING value 'USR00'. "#EC NOTEXT
+  constants C_ATTR_NAME_USR01 type STRING value 'USR01'. "#EC NOTEXT
+  constants C_ATTR_NAME_USR02 type STRING value 'USR02'. "#EC NOTEXT
+  constants C_ATTR_NAME_USR03 type STRING value 'USR03'. "#EC NOTEXT
+  constants C_ATTR_NAME_USR08 type STRING value 'USR08'. "#EC NOTEXT
+  constants C_ATTR_NAME_USR09 type STRING value 'USR09'. "#EC NOTEXT
+  constants C_ATTR_NAME_USR10 type STRING value 'USR10'. "#EC NOTEXT
+  constants C_ATTR_NAME_USR11 type STRING value 'USR11'. "#EC NOTEXT
+  constants C_ATTR_NAME_INDET type STRING value 'INDET'. "#EC NOTEXT
+  constants C_ATTR_NAME_ARBPL type STRING value 'ARBPL'. "#EC NOTEXT
+  constants C_ATTR_NAME_LOEKZ type STRING value 'LOEKZ'. "#EC NOTEXT
+  constants C_ATTR_NAME_PLNKN type STRING value 'PLNKN'. "#EC NOTEXT
+
+  methods GET_PROPERTIES
+    redefinition .
+  methods GET_PROPERTY_DEFS
+    redefinition .
+*----------- Include : /OTX/RM_PM_CL_PP_TASKLIST_OP==CO
+*"* protected components of class /OTX/RM_PM_CL_PP_TASKLIST
+*"* do not include other source files here!!!
+protected section.
+*----------- Include : /OTX/RM_PM_CL_PP_TASKLIST_OP==CI
+*"* private components of class /OTX/RM_PM_CL_PP_TASKLIST_OP
+*"* do not include other source files here!!!
+private section.
+*----------- Include : /OTX/RM_PM_CL_PP_TASKLIST_OP==CP
+class-pool .
+*"* class pool for class /OTX/RM_PM_CL_PP_TASKLIST_OP
+
+*"* local type definitions
+include /OTX/RM_PM_CL_PP_TASKLIST_OP==ccdef.
+
+*"* class /OTX/RM_PM_CL_PP_TASKLIST_OP definition
+*"* public declarations
+  include /OTX/RM_PM_CL_PP_TASKLIST_OP==cu.
+*"* protected declarations
+  include /OTX/RM_PM_CL_PP_TASKLIST_OP==co.
+*"* private declarations
+  include /OTX/RM_PM_CL_PP_TASKLIST_OP==ci.
+endclass. "/OTX/RM_PM_CL_PP_TASKLIST_OP definition
+
+*"* macro definitions
+include /OTX/RM_PM_CL_PP_TASKLIST_OP==ccmac.
+*"* local class implementation
+include /OTX/RM_PM_CL_PP_TASKLIST_OP==ccimp.
+
+class /OTX/RM_PM_CL_PP_TASKLIST_OP implementation.
+*"* method's implementations
+  include methods.
+endclass. "/OTX/RM_PM_CL_PP_TASKLIST_OP implementation
+
+*----------- Include : /OTX/RM_PM_CL_PP_TASKLIST_OP==CM001
+METHOD get_properties.
+
+  DATA:
+    ls_parent           TYPE /otx/rm_wsci_s_bor,
+    ls_child            TYPE /otx/rm_wsci_s_busobj,
+    lt_attr_defs        TYPE /otx/rm_wsci_tt_attr_def,
+    ls_attr_def         TYPE /otx/rm_wsci_s_attr_def,
+    ls_prop             TYPE LINE OF /otx/rm_wsci_tt_properties,
+    l_error_text        TYPE string,
+    l_utc_string        TYPE string,
+    l_value             TYPE string.
+
+  DATA: ls_tli_key  TYPE /otx/rm_pm_cl_constants=>typ_tli_key,
+        ls_tlo_key  TYPE /otx/rm_pm_cl_constants=>typ_tlo_key,
+        lt_tlo_key  LIKE STANDARD TABLE OF ls_tlo_key,
+        ls_plpo     TYPE plpo,
+        ls_rcr01    TYPE rcr01.
+
+  DATA: BEGIN OF ls_plmz,
+          stlty TYPE plmz-stlty,
+          stlnr TYPE plmz-stlnr,
+          stlal TYPE plmz-stlal,
+          stlkn TYPE plmz-stlkn,
+        END OF ls_plmz,
+        lt_plmz LIKE STANDARD TABLE OF ls_plmz.
+
+  DATA: lt_itm   TYPE cscl_itm_id_xt_tb_type,
+        ls_itm   TYPE cscl_itm_id_xt_type,
+        lt_stpob TYPE cscl_itm_stpo_tb_type,
+        ls_stpob LIKE LINE OF lt_stpob.
+
+  FIELD-SYMBOLS: <ls_bor_properties> TYPE /otx/rm_wsci_s_bor_properties.
+
+  CALL METHOD super->get_properties
+    EXPORTING
+      pit_bor            = pit_bor
+    IMPORTING
+      pet_bor_properties = pet_bor_properties.
+
+  CALL METHOD get_property_defs
+    IMPORTING
+      pet_attr_defs = lt_attr_defs.
+
+*Add properties
+  LOOP AT pet_bor_properties ASSIGNING <ls_bor_properties>.
+    ls_tlo_key = <ls_bor_properties>-bor-id.
+
+    SELECT SINGLE * INTO ls_plpo
+      FROM plpo
+     WHERE plnty = ls_tlo_key-plnty
+       AND plnnr = ls_tlo_key-plnnr
+       AND plnkn = ls_tlo_key-plnkn
+       AND zaehl = ls_tlo_key-zaehl.
+    IF sy-subrc <> 0.
+      l_error_text =  'Could not find task list operation in plpo' &
+         'with key plnty = &1, plnnr =  &2, plnkn = &3'.    "#EC NOTEXT
+      REPLACE '&1' IN l_error_text WITH ls_tlo_key-plnty.
+      REPLACE '&2' IN l_error_text WITH ls_tlo_key-plnnr.
+      REPLACE '&3' IN l_error_text WITH ls_tlo_key-plnkn.
+      CREATE OBJECT <ls_bor_properties>-exception
+        EXPORTING
+          m_error_text = l_error_text.
+    ENDIF.
+
+    LOOP AT lt_attr_defs INTO ls_attr_def.
+      CLEAR ls_prop.
+      ls_prop-def = ls_attr_def.
+
+      CASE ls_attr_def-key.
+        WHEN c_attr_name_vornr.
+          APPEND ls_plpo-vornr TO ls_prop-values.
+
+        WHEN c_attr_name_werks.
+          APPEND ls_plpo-werks TO ls_prop-values.
+
+        WHEN c_attr_name_sumnr.
+          APPEND ls_plpo-sumnr TO ls_prop-values.
+
+        WHEN c_attr_name_arbid.
+          APPEND ls_plpo-arbid TO ls_prop-values.
+
+        WHEN c_attr_name_ltxa1.
+          APPEND ls_plpo-ltxa1 TO ls_prop-values.
+
+        WHEN c_attr_name_steus.
+          APPEND ls_plpo-steus TO ls_prop-values.
+
+        WHEN c_attr_name_usr00.
+          APPEND ls_plpo-usr00 TO ls_prop-values.
+
+        WHEN c_attr_name_usr01.
+          APPEND ls_plpo-usr01 TO ls_prop-values.
+
+        WHEN c_attr_name_usr02.
+          APPEND ls_plpo-usr02 TO ls_prop-values.
+
+        WHEN c_attr_name_usr03.
+          APPEND ls_plpo-usr03 TO ls_prop-values.
+
+        WHEN c_attr_name_usr08.
+          l_utc_string = convert_dats_to_string( ls_plpo-usr08 ).
+          APPEND l_utc_string TO ls_prop-values.
+
+        WHEN c_attr_name_usr09.
+          l_utc_string = convert_dats_to_string( ls_plpo-usr09 ).
+          APPEND l_utc_string TO ls_prop-values.
+
+        WHEN c_attr_name_usr10.
+          APPEND ls_plpo-usr10 TO ls_prop-values.
+
+        WHEN c_attr_name_usr11.
+          APPEND ls_plpo-usr11 TO ls_prop-values.
+
+        WHEN c_attr_name_indet.
+          APPEND ls_plpo-indet TO ls_prop-values.
+
+        WHEN c_attr_name_arbpl.
+          IF NOT ls_plpo-arbid IS INITIAL.
+            CALL FUNCTION 'CR_WORKSTATION_READ'
+              EXPORTING
+                id        = ls_plpo-arbid
+              IMPORTING
+                arbpl     = ls_rcr01-arbpl
+              EXCEPTIONS
+                not_found = 1
+                OTHERS    = 2.
+            IF sy-subrc <> 0.
+              l_error_text =  'Could not find the work center for' &
+                 'arbid = &1'.                              "#EC NOTEXT
+              REPLACE '&1' IN l_error_text WITH ls_plpo-arbid.
+              CREATE OBJECT <ls_bor_properties>-exception
+                EXPORTING
+                  m_error_text = l_error_text.
+              CONTINUE.
+            ENDIF.
+            APPEND ls_rcr01-arbpl TO ls_prop-values.
+          ENDIF.
+
+        WHEN c_attr_name_loekz.
+          IF ls_plpo-sumnr IS INITIAL.
+            SELECT COUNT( * )
+              FROM plas
+             WHERE plnty = ls_tlo_key-plnty
+               AND plnnr = ls_tlo_key-plnnr
+               AND plnkn = ls_tlo_key-plnkn
+               AND loekz = 'X'.
+            IF sy-subrc IS INITIAL.
+              APPEND '!' TO ls_prop-values.
+            ELSE.
+              APPEND ls_plpo-loekz TO ls_prop-values.
+            ENDIF.
+          ELSE.
+            IF NOT ls_plpo-loekz IS INITIAL.
+              APPEND '!' TO ls_prop-values.
+            ELSE.
+              APPEND ls_plpo-loekz TO ls_prop-values.
+            ENDIF.
+          ENDIF.
+
+        WHEN c_attr_name_plnkn.
+          CALL FUNCTION 'CONVERSION_EXIT_ALPHA_OUTPUT'
+            EXPORTING
+              input  = ls_plpo-plnkn
+            IMPORTING
+              output = l_value.
+          CONDENSE l_value.
+          APPEND l_value TO ls_prop-values.
+
+        WHEN OTHERS.
+          " Maybe this property was already returned
+          " by the parent method.
+          CONTINUE.
+      ENDCASE.
+
+      APPEND ls_prop TO <ls_bor_properties>-properties.
+    ENDLOOP.
+
+*Add parents
+    IF ls_plpo-sumnr IS INITIAL.
+      SELECT SINGLE plnty plnnr plnal
+        FROM plas
+        INTO (ls_tli_key-plnty, ls_tli_key-plnnr, ls_tli_key-plnal)
+       WHERE plnty = ls_tlo_key-plnty
+         AND plnnr = ls_tlo_key-plnnr
+         AND plnkn = ls_tlo_key-plnkn.
+
+      IF sy-subrc IS INITIAL.
+        ls_parent-type = /otx/rm_pm_cl_constants=>c_bo_tasklist_super.
+        ls_parent-id   = ls_tli_key.
+        <ls_bor_properties>-composite_parent-type = ls_parent-type.
+        <ls_bor_properties>-composite_parent-id   = ls_parent-id.
+      ELSE.
+        l_error_text = 'Could not find parent task list for operation' &
+           'with key plnty = &1, plnnr =  &2, plnkn = &3'.  "#EC NOTEXT
+        REPLACE '&1' IN l_error_text WITH ls_tlo_key-plnty.
+        REPLACE '&2' IN l_error_text WITH ls_tlo_key-plnnr.
+        REPLACE '&3' IN l_error_text WITH ls_tlo_key-plnkn.
+        CREATE OBJECT <ls_bor_properties>-exception
+          EXPORTING
+            m_error_text = l_error_text.
+      ENDIF.
+    ELSE.
+*It is a suboperation
+      ls_tlo_key-plnty = ls_plpo-plnty.
+      ls_tlo_key-plnnr = ls_plpo-plnnr.
+      ls_tlo_key-plnkn = ls_plpo-sumnr.
+      ls_tlo_key-zaehl = ls_plpo-sumnr.
+      ls_parent-type = /otx/rm_pm_cl_constants=>c_bo_tasklist_operation.
+      ls_parent-id   = ls_tlo_key.
+      <ls_bor_properties>-composite_parent-type = ls_parent-type.
+      <ls_bor_properties>-composite_parent-id   = ls_parent-id.
+    ENDIF.
+
+*Material relation
+    CLEAR: lt_plmz, lt_stpob, lt_itm.
+    SELECT stlty stlnr stlal stlkn
+      INTO TABLE lt_plmz
+      FROM plmz
+      WHERE plnty = ls_tlo_key-plnty
+        AND plnnr = ls_tlo_key-plnnr
+        AND plnkn = ls_tlo_key-plnkn.
+    LOOP AT lt_plmz INTO ls_plmz.
+      ls_itm-mandt = sy-mandt.
+      ls_itm-stlty = ls_plmz-stlty.
+      ls_itm-stlnr = ls_plmz-stlnr.
+      ls_itm-stvkn = ls_plmz-stlkn.
+      ls_itm-stlal = ls_plmz-stlal.
+      INSERT ls_itm INTO TABLE lt_itm.
+    ENDLOOP.
+
+    CALL FUNCTION 'CS_DU_ITM_READ'
+      EXPORTING
+        i_date_from = sy-datum
+        i_date_to   = sy-datum
+        i_itm_ident = lt_itm
+      IMPORTING
+        e_itm_stpob = lt_stpob.
+    LOOP AT lt_stpob INTO ls_stpob.
+      ls_parent-type = /otx/rm_pm_cl_constants=>c_bo_material_super.
+      ls_parent-id   = ls_stpob-idnrk.
+      APPEND ls_parent TO <ls_bor_properties>-parents.
+    ENDLOOP.
+
+*Add children
+    ls_tlo_key = <ls_bor_properties>-bor-id.
+    SELECT plnty plnnr plnkn zaehl
+      FROM plpo
+      INTO TABLE lt_tlo_key
+       WHERE plnty = ls_tlo_key-plnty
+         AND plnnr = ls_tlo_key-plnnr
+         AND sumnr = ls_tlo_key-plnkn.
+    LOOP AT lt_tlo_key INTO ls_tlo_key.
+      ls_child-type = /otx/rm_pm_cl_constants=>c_bo_tasklist_operation.
+      ls_child-id = ls_tlo_key.
+      APPEND ls_child TO <ls_bor_properties>-composite_children.
+    ENDLOOP.
+
+  ENDLOOP.
+ENDMETHOD.
+*----------- Include : /OTX/RM_PM_CL_PP_TASKLIST_OP==CM002
+METHOD get_property_defs.
+  super->get_property_defs(
+      EXPORTING
+        pi_disp_lang                   = sy-langu    " Language ID
+      IMPORTING
+        pet_attr_defs                  = pet_attr_defs
+        pet_allowed_parent_types       = pet_allowed_parent_types
+        pet_allowed_child_types        = pet_allowed_child_types
+        pet_allowed_ident_busobj_types = pet_allowed_ident_busobj_types
+        pet_allowed_parent_types_ext   = pet_allowed_parent_types_ext
+        pet_allowed_child_types_ext    = pet_allowed_child_types_ext
+    ).
+
+  DATA: ls_props    TYPE plpo,
+        ls_rcr01    TYPE rcr01,
+        ls_attr_def LIKE LINE OF pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_props
+      pi_struct_attr = c_attr_name_vornr
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_props
+      pi_struct_attr = c_attr_name_werks
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_props
+      pi_struct_attr = c_attr_name_arbid
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_props
+      pi_struct_attr = c_attr_name_ltxa1
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_props
+      pi_struct_attr = c_attr_name_steus
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_props
+      pi_struct_attr = c_attr_name_sumnr
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_props
+      pi_struct_attr = c_attr_name_usr00
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_props
+      pi_struct_attr = c_attr_name_usr01
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_props
+      pi_struct_attr = c_attr_name_usr02
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_props
+      pi_struct_attr = c_attr_name_usr03
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_props
+      pi_struct_attr = c_attr_name_usr08
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_props
+      pi_struct_attr = c_attr_name_usr09
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_props
+      pi_struct_attr = c_attr_name_usr10
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_props
+      pi_struct_attr = c_attr_name_usr11
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_props
+      pi_struct_attr = c_attr_name_indet
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_rcr01
+      pi_struct_attr = c_attr_name_arbpl
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_props
+      pi_struct_attr = c_attr_name_loekz
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_props
+      pi_struct_attr = c_attr_name_plnkn
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+*Relations
+  APPEND /otx/rm_pm_cl_constants=>c_bo_tasklist_operation
+      TO pet_allowed_child_types.
+  APPEND /otx/rm_pm_cl_constants=>c_bo_order_operation_super
+      TO pet_allowed_child_types.
+
+  APPEND /otx/rm_pm_cl_constants=>c_bo_tasklist_super
+      TO  pet_allowed_parent_types.
+  APPEND /otx/rm_pm_cl_constants=>c_bo_tasklist_operation
+      TO  pet_allowed_parent_types.
+  APPEND /otx/rm_pm_cl_constants=>c_bo_material_super
+      TO  pet_allowed_parent_types.
+
+ENDMETHOD.

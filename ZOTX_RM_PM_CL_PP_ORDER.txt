@@ -1,0 +1,871 @@
+*----------- Include : ZOTX_RM_PM_CL_PP_ORDER========CCDEF
+*"* use this source file for any type declarations (class
+*"* definitions, interfaces or data types) you need for method
+*"* implementation or private method's signature
+
+*----------- Include : ZOTX_RM_PM_CL_PP_ORDER========CCMAC
+*"* use this source file for any macro definitions you need
+*"* in the implementation part of the class
+
+*----------- Include : ZOTX_RM_PM_CL_PP_ORDER========CCIMP
+*"* local class implementation for public class
+*"* use this source file for the implementation part of
+*"* local helper classes
+
+*----------- Include : ZOTX_RM_PM_CL_PP_ORDER========CU
+class ZOTX_RM_PM_CL_PP_ORDER definition
+  public
+  inheriting from /OTX/RM_WSCI_CL_WSPROV_DEFAULT
+  final
+  create public .
+
+*"* public components of class ZOTX_RM_PM_CL_PP_ORDER
+*"* do not include other source files here!!!
+public section.
+
+  constants C_ATTR_NAME_ORDERID type STRING value 'ORDERID' ##NO_TEXT.
+  constants C_ATTR_NAME_EQUIPMENT type STRING value 'EQUIPMENT' ##NO_TEXT.
+  constants C_ATTR_NAME_ASSEMBLY type STRING value 'ASSEMBLY' ##NO_TEXT.
+  constants C_ATTR_NAME_PLANPLANT type STRING value 'PLANPLANT' ##NO_TEXT.
+  constants C_ATTR_NAME_PLANGROUP type STRING value 'PLANGROUP' ##NO_TEXT.
+  constants C_ATTR_NAME_MN_WK_CTR type STRING value 'MN_WK_CTR' ##NO_TEXT.
+  constants C_ATTR_NAME_MNTPLAN type STRING value 'MNTPLAN' ##NO_TEXT.
+  constants C_ATTR_NAME_MAINTITEM type STRING value 'MAINTITEM' ##NO_TEXT.
+  constants C_ATTR_NAME_REVISION type STRING value 'REVISION' ##NO_TEXT.
+  constants C_ATTR_NAME_REFDATE type STRING value 'REFDATE' ##NO_TEXT.
+  constants C_ATTR_NAME_IPHAS type STRING value 'IPHAS' ##NO_TEXT.
+  constants C_ATTR_NAME_PMACTTYPE type STRING value 'PMACTTYPE' ##NO_TEXT.
+  constants C_ATTR_NAME_NOTIF_NO type STRING value 'NOTIF_NO' ##NO_TEXT.
+  constants C_ATTR_NAME_ORDER_TYPE type STRING value 'ORDER_TYPE' ##NO_TEXT.
+  constants C_ATTR_NAME_ENTERED_BY type STRING value 'ENTERED_BY' ##NO_TEXT.
+  constants C_ATTR_NAME_ENTER_DATE type STRING value 'ENTER_DATE' ##NO_TEXT.
+  constants C_ATTR_NAME_SHORT_TEXT type STRING value 'SHORT_TEXT' ##NO_TEXT.
+  constants C_ATTR_NAME_WERKS type STRING value 'WERKS' ##NO_TEXT.
+  constants C_ATTR_NAME_RESPCCTR type STRING value 'RESPCCTR' ##NO_TEXT.
+  constants C_ATTR_NAME_LOCATION type STRING value 'LOCATION' ##NO_TEXT.
+  constants C_ATTR_NAME_WBS_ELEM type STRING value 'WBS_ELEM' ##NO_TEXT.
+  constants C_ATTR_NAME_FUNCT_LOC type STRING value 'FUNCT_LOC' ##NO_TEXT.
+  constants C_ATTR_NAME_SORTFIELD type STRING value 'SORTFIELD' ##NO_TEXT.
+  constants C_ATTR_NAME_MAINTPLANT type STRING value 'MAINTPLANT' ##NO_TEXT.
+  constants C_ATTR_NAME_MAINTROOM type STRING value 'MAINTROOM' ##NO_TEXT.
+  constants C_ATTR_NAME_PLSECTN type STRING value 'PLSECTN' ##NO_TEXT.
+  constants C_ATTR_NAME_FINISH_DATE type STRING value 'FINISH_DATE' ##NO_TEXT.
+  constants C_ATTR_NAME_START_DATE type STRING value 'START_DATE' ##NO_TEXT.
+  constants C_ATTR_NAME_TASK_LIST_TYPE type STRING value 'TASK_LIST_TYPE' ##NO_TEXT.
+  constants C_ATTR_NAME_TASK_LIST_GROUP type STRING value 'TASK_LIST_GROUP' ##NO_TEXT.
+  constants C_ATTR_NAME_GROUP_COUNTER type STRING value 'GROUP_COUNTER' ##NO_TEXT.
+  constants C_ATTR_NAME_STATUS_SET type STRING value 'STATUSSET' ##NO_TEXT.
+  constants C_ATTR_NAME_STATUS_ID type STRING value 'STATUS_ID' ##NO_TEXT.
+  constants C_ATTR_NAME_STATUS_STXT type STRING value 'STATUSSTXT' ##NO_TEXT.
+  constants C_ATTR_NAME_STATUS_LTXT type STRING value 'STATUSLTXT' ##NO_TEXT.
+
+  methods GET_PROPERTIES
+    redefinition .
+  methods GET_PROPERTY_DEFS
+    redefinition .
+*----------- Include : ZOTX_RM_PM_CL_PP_ORDER========CO
+*"* protected components of class /OTX/RM_PM_CL_PP_TASKLIST
+*"* do not include other source files here!!!
+protected section.
+*----------- Include : ZOTX_RM_PM_CL_PP_ORDER========CI
+*"* private components of class ZOTX_RM_PM_CL_PP_ORDER
+*"* do not include other source files here!!!
+private section.
+*----------- Include : ZOTX_RM_PM_CL_PP_ORDER========CP
+class-pool .
+*"* class pool for class ZOTX_RM_PM_CL_PP_ORDER
+
+*"* local type definitions
+include ZOTX_RM_PM_CL_PP_ORDER========ccdef.
+
+*"* class ZOTX_RM_PM_CL_PP_ORDER definition
+*"* public declarations
+  include ZOTX_RM_PM_CL_PP_ORDER========cu.
+*"* protected declarations
+  include ZOTX_RM_PM_CL_PP_ORDER========co.
+*"* private declarations
+  include ZOTX_RM_PM_CL_PP_ORDER========ci.
+endclass. "ZOTX_RM_PM_CL_PP_ORDER definition
+
+*"* macro definitions
+include ZOTX_RM_PM_CL_PP_ORDER========ccmac.
+*"* local class implementation
+include ZOTX_RM_PM_CL_PP_ORDER========ccimp.
+
+class ZOTX_RM_PM_CL_PP_ORDER implementation.
+*"* method's implementations
+  include methods.
+endclass. "ZOTX_RM_PM_CL_PP_ORDER implementation
+
+*----------- Include : ZOTX_RM_PM_CL_PP_ORDER========CT
+*"* dummy include to reduce generation dependencies between
+*"* class ZOTX_RM_PM_CL_PP_ORDER and it's users.
+*"* touched if any type reference has been changed
+*----------- Include : ZOTX_RM_PM_CL_PP_ORDER========CM001
+METHOD GET_PROPERTIES.
+
+  DATA:
+    ls_child            TYPE /otx/rm_wsci_s_busobj,
+    ls_parent           TYPE /otx/rm_wsci_s_bor,
+    lt_attr_defs        TYPE /otx/rm_wsci_tt_attr_def,
+    ls_attr_def         TYPE /otx/rm_wsci_s_attr_def,
+    ls_prop             TYPE LINE OF /otx/rm_wsci_tt_properties,
+    l_error_msg         TYPE string.
+
+  DATA: ls_order_hdr TYPE bapi_alm_order_header_e,
+*{   INSERT         CRDK953707                                        5
+        ls_order_type TYPE bapi_alm_order_header_e-ORDER_TYPE,
+*
+*}   INSERT
+        lt_return    TYPE TABLE OF bapiret2,
+        ls_return    LIKE LINE OF lt_return,
+        l_objkey     TYPE /otx/rm_pm_cl_constants=>typ_ord_key.
+
+  DATA: l_aufk_werks TYPE aufk-werks,
+        l_afih_iphas TYPE afih-iphas,
+        lt_status    TYPE STANDARD TABLE OF tj02t,
+        l_status     TYPE tj02t,
+        l_inact      TYPE jest-inact,
+        l_nodis      TYPE tj02-nodis,
+        l_sumnr      TYPE afvc-sumnr,
+        l_maufnr     TYPE afko-maufnr,
+        ls_oro_key   TYPE /otx/rm_pm_cl_constants=>typ_oro_key,
+        lt_oro_key   LIKE STANDARD TABLE OF ls_oro_key,
+        ls_tli_key   TYPE /otx/rm_pm_cl_constants=>typ_tli_key,
+        l_utc_string TYPE string,
+        l_value      TYPE string.
+
+  DATA: lt_values_row       TYPE /otx/rm_tt_stringmatrix,
+        lt_values           TYPE /otx/rm_tt_stringtab.
+
+  FIELD-SYMBOLS: <ls_bor_properties> TYPE /otx/rm_wsci_s_bor_properties.
+
+  CALL METHOD super->get_properties
+    EXPORTING
+      pit_bor            = pit_bor
+    IMPORTING
+      pet_bor_properties = pet_bor_properties.
+
+  CALL METHOD get_property_defs
+    IMPORTING
+      pet_attr_defs = lt_attr_defs.
+
+*{   INSERT         CRDK952929                                        3
+*tes
+*}   INSERT
+*Add properties
+  LOOP AT pet_bor_properties ASSIGNING <ls_bor_properties>.
+    l_objkey = <ls_bor_properties>-bor-id.
+
+    CLEAR: ls_order_hdr, l_afih_iphas, l_aufk_werks, ls_return.
+    CALL FUNCTION 'BAPI_ALM_ORDER_GET_DETAIL'
+      EXPORTING
+        number    = l_objkey-aufnr
+      IMPORTING
+        es_header = ls_order_hdr
+      TABLES
+        return    = lt_return.
+
+*Check for errors
+    CLEAR ls_return.
+    LOOP AT lt_return INTO ls_return WHERE type CA 'AE'.
+      l_error_msg = ls_return-message.
+      CREATE OBJECT <ls_bor_properties>-exception
+        EXPORTING
+          m_error_text = l_error_msg.
+      EXIT.
+    ENDLOOP.
+
+    IF NOT ls_return IS INITIAL.
+      CONTINUE.
+    ENDIF.
+
+    SELECT SINGLE aufk~werks afih~iphas
+      INTO (l_aufk_werks, l_afih_iphas )
+      FROM aufk
+      INNER JOIN afih ON afih~aufnr = aufk~aufnr
+      WHERE aufk~aufnr = l_objkey.
+
+    SELECT tj02t~istat tj02t~spras tj02t~txt04 tj02t~txt30
+      INTO TABLE lt_status
+      FROM jest AS j
+      INNER JOIN tj02 AS t ON t~istat = j~stat
+      INNER JOIN tj02t     ON tj02t~istat = t~istat
+      WHERE j~objnr = ls_order_hdr-object_no
+        AND j~inact = l_inact
+        AND t~nodis = l_nodis
+        AND tj02t~spras EQ sy-langu.
+*{   INSERT         CRDK953707                                        4
+*
+    " Filter
+     CLEAR: ls_order_type.
+     SELECT SINGLE value FROM ZAEROW_XECMPARAM
+     INTO  ls_order_type
+     WHERE sysid = sy-sysid
+     AND   type  = 'W'
+     AND   object = 'BUS2007'
+     AND   param = 'ORDER_TYPE'
+     AND   value = ls_order_hdr-ORDER_TYPE.
+
+    IF ls_order_type is initial.
+      CREATE OBJECT <ls_bor_properties>-exception
+      TYPE
+        /OTX/CX_RM_WSCI_NO_DECLARING
+      EXPORTING
+            m_error_text = 'Type d''OT non pris en charge'
+            M_LONG_ERROR_TEXT = 'Type d''OT non pris en charge'.
+      CONTINUE.
+   ENDIF.
+
+
+*}   INSERT
+
+    LOOP AT lt_attr_defs INTO ls_attr_def.
+      CLEAR ls_prop.
+      ls_prop-def = ls_attr_def.
+
+      CASE ls_attr_def-key.
+        WHEN c_attr_name_orderid.
+          CALL FUNCTION 'CONVERSION_EXIT_ALPHA_OUTPUT'
+            EXPORTING
+              input  = ls_order_hdr-orderid
+            IMPORTING
+              output = l_value.
+          CONDENSE l_value.
+          APPEND l_value TO ls_prop-values.
+
+        WHEN c_attr_name_equipment.
+          CALL FUNCTION 'CONVERSION_EXIT_ALPHA_OUTPUT'
+            EXPORTING
+              input  = ls_order_hdr-equipment
+            IMPORTING
+              output = l_value.
+          CONDENSE l_value.
+          APPEND l_value TO ls_prop-values.
+
+        WHEN c_attr_name_assembly.
+          APPEND ls_order_hdr-assembly TO ls_prop-values.
+
+        WHEN c_attr_name_planplant.
+          APPEND ls_order_hdr-planplant TO ls_prop-values.
+
+        WHEN c_attr_name_plangroup.
+          APPEND ls_order_hdr-plangroup TO ls_prop-values.
+
+        WHEN c_attr_name_mn_wk_ctr.
+          APPEND ls_order_hdr-mn_wk_ctr TO ls_prop-values.
+
+        WHEN c_attr_name_mntplan.
+          APPEND ls_order_hdr-mntplan TO ls_prop-values.
+
+        WHEN c_attr_name_maintitem.
+          APPEND ls_order_hdr-maintitem TO ls_prop-values.
+
+        WHEN c_attr_name_revision.
+          APPEND ls_order_hdr-revision TO ls_prop-values.
+
+        WHEN c_attr_name_order_type.
+          APPEND ls_order_hdr-order_type TO ls_prop-values.
+
+        WHEN c_attr_name_entered_by.
+          APPEND ls_order_hdr-entered_by TO ls_prop-values.
+
+        WHEN c_attr_name_enter_date.
+          l_utc_string =
+                    convert_dats_to_string( ls_order_hdr-enter_date ).
+          APPEND l_utc_string TO ls_prop-values.
+
+        WHEN c_attr_name_short_text.
+          APPEND ls_order_hdr-short_text TO ls_prop-values.
+
+        WHEN c_attr_name_respcctr.
+          APPEND ls_order_hdr-respcctr TO ls_prop-values.
+
+        WHEN c_attr_name_location.
+          APPEND ls_order_hdr-location TO ls_prop-values.
+
+        WHEN c_attr_name_wbs_elem.
+          APPEND ls_order_hdr-wbs_elem TO ls_prop-values.
+
+        WHEN c_attr_name_funct_loc.
+          CALL FUNCTION 'CONVERSION_EXIT_TPLNR_OUTPUT'
+            EXPORTING
+              input  = ls_order_hdr-funct_loc
+            IMPORTING
+              output = l_value.
+          CONDENSE l_value.
+          APPEND l_value TO ls_prop-values.
+
+        WHEN c_attr_name_sortfield.
+          APPEND ls_order_hdr-sortfield TO ls_prop-values.
+
+        WHEN c_attr_name_maintplant.
+          APPEND ls_order_hdr-maintplant TO ls_prop-values.
+
+        WHEN c_attr_name_finish_date.
+          l_utc_string =
+            convert_dats_to_string( ls_order_hdr-finish_date ).
+          APPEND l_utc_string TO ls_prop-values.
+
+        WHEN c_attr_name_start_date.
+          l_utc_string =
+            convert_dats_to_string( ls_order_hdr-start_date ).
+          APPEND l_utc_string TO ls_prop-values.
+
+        WHEN c_attr_name_task_list_type.
+          APPEND ls_order_hdr-task_list_type TO ls_prop-values.
+
+        WHEN c_attr_name_task_list_group.
+          CALL FUNCTION 'CONVERSION_EXIT_ALPHA_OUTPUT'
+            EXPORTING
+              input  = ls_order_hdr-task_list_group
+            IMPORTING
+              output = l_value.
+          CONDENSE l_value.
+          APPEND l_value TO ls_prop-values.
+
+        WHEN c_attr_name_group_counter.
+          CALL FUNCTION 'CONVERSION_EXIT_ALPHA_OUTPUT'
+            EXPORTING
+              input  = ls_order_hdr-group_counter
+            IMPORTING
+              output = l_value.
+          CONDENSE l_value.
+          APPEND l_value TO ls_prop-values.
+
+        WHEN c_attr_name_refdate.
+          l_utc_string =
+            convert_dats_to_string( ls_order_hdr-refdate ).
+          APPEND l_utc_string TO ls_prop-values.
+
+        WHEN c_attr_name_pmacttype.
+          APPEND ls_order_hdr-pmacttype TO ls_prop-values.
+
+        WHEN c_attr_name_notif_no.
+          CALL FUNCTION 'CONVERSION_EXIT_ALPHA_OUTPUT'
+            EXPORTING
+              input  = ls_order_hdr-notif_no
+            IMPORTING
+              output = l_value.
+          CONDENSE l_value.
+          APPEND l_value TO ls_prop-values.
+
+        WHEN c_attr_name_maintroom.
+          APPEND ls_order_hdr-maintroom TO ls_prop-values.
+
+        WHEN c_attr_name_plsectn.
+          APPEND ls_order_hdr-plsectn TO ls_prop-values.
+
+        WHEN c_attr_name_werks.
+          APPEND l_aufk_werks TO ls_prop-values.
+
+        WHEN c_attr_name_iphas.
+          APPEND l_afih_iphas TO ls_prop-values.
+
+        WHEN c_attr_name_status_set.
+          LOOP AT lt_status INTO l_status.
+            CLEAR: lt_values_row, lt_values.
+            APPEND l_status-istat TO lt_values.
+            APPEND lt_values TO lt_values_row.
+
+            CLEAR lt_values.
+            APPEND l_status-txt04 TO lt_values.
+            APPEND lt_values TO lt_values_row.
+
+            CLEAR lt_values.
+            APPEND l_status-txt30 TO lt_values.
+            APPEND lt_values TO lt_values_row.
+
+            APPEND lt_values_row TO ls_prop-values_group.
+          ENDLOOP.
+
+        WHEN OTHERS.
+          " Maybe this property was already returned
+          " by the parent method.
+          CONTINUE.
+      ENDCASE.
+
+      IF <ls_bor_properties>-exception IS BOUND.
+        CONTINUE.
+      ENDIF.
+      APPEND ls_prop TO <ls_bor_properties>-properties.
+    ENDLOOP.
+
+*Add operations
+*    SELECT aufpl aplzl
+*      INTO CORRESPONDING FIELDS OF TABLE lt_oro_key
+*      FROM afvc
+*      WHERE aufpl = ls_order_hdr-routing_no
+*        AND sumnr = l_sumnr.
+*
+*    LOOP AT lt_oro_key INTO ls_oro_key.
+*      ls_child-type =
+*         /otx/rm_pm_cl_constants=>c_bo_order_operation_super.
+*      ls_child-id   = ls_oro_key.
+*      APPEND ls_child TO <ls_bor_properties>-composite_children.
+*    ENDLOOP.
+
+*Add other relations
+*Task List
+*{   REPLACE        CRDK951862                                        2
+*\    IF NOT ls_order_hdr-task_list_group IS INITIAL.
+*\      CLEAR ls_parent.
+*\      ls_parent-type = /otx/rm_pm_cl_constants=>c_bo_tasklist_super.
+*\      ls_tli_key-plnty  = ls_order_hdr-task_list_type.
+*\      ls_tli_key-plnnr  = ls_order_hdr-task_list_group.
+*\      ls_tli_key-plnal  = ls_order_hdr-group_counter.
+*\      ls_parent-id = ls_tli_key.
+*\      APPEND ls_parent TO <ls_bor_properties>-parents.
+*\    ENDIF.
+"ne pas prendre en compte les gammes ticket :117909
+*}   REPLACE
+
+*Superior order
+    SELECT SINGLE maufnr
+      INTO l_maufnr
+      FROM afko
+      WHERE aufnr = ls_order_hdr-orderid.
+    IF sy-subrc IS INITIAL
+       AND NOT l_maufnr IS INITIAL.
+      CLEAR ls_parent.
+      ls_parent-type = /otx/rm_pm_cl_constants=>c_bo_order_super.
+      ls_parent-id = l_maufnr.
+      APPEND ls_parent TO <ls_bor_properties>-parents.
+    ENDIF.
+
+*Notification
+    IF NOT ls_order_hdr-notif_no IS INITIAL.
+      CLEAR ls_parent.
+      ls_parent-type = /otx/rm_pm_cl_constants=>c_bo_notification_super.
+      ls_parent-id = ls_order_hdr-notif_no.
+      APPEND ls_parent TO <ls_bor_properties>-parents.
+    ENDIF.
+
+*Equipment
+    IF NOT ls_order_hdr-equipment IS INITIAL.
+      CLEAR ls_parent.
+      ls_parent-type = /otx/rm_pm_cl_constants=>c_bo_equi_super.
+      ls_parent-id = ls_order_hdr-equipment.
+      APPEND ls_parent TO <ls_bor_properties>-parents.
+    ENDIF.
+
+*Funct. Loc.
+*{   REPLACE        CRDK951862                                        1
+*\    IF NOT ls_order_hdr-funct_loc IS INITIAL.
+*\      CLEAR ls_parent.
+*\      ls_parent-type = /otx/rm_pm_cl_constants=>c_bo_func_loc_super.
+*\      ls_parent-id = ls_order_hdr-funct_loc.
+*\      APPEND ls_parent TO <ls_bor_properties>-parents.
+*\    ENDIF.
+"ne pas prendre en compte les postes de travaux ticket :117909
+*}   REPLACE
+
+*Assembly
+    IF NOT ls_order_hdr-assembly IS INITIAL.
+      CLEAR ls_parent.
+      ls_parent-type = /otx/rm_pm_cl_constants=>c_bo_material_super.
+      ls_parent-id = ls_order_hdr-assembly.
+      APPEND ls_parent TO <ls_bor_properties>-parents.
+    ENDIF.
+
+  ENDLOOP.
+ENDMETHOD.
+*----------- Include : ZOTX_RM_PM_CL_PP_ORDER========CM002
+METHOD GET_PROPERTY_DEFS.
+
+  super->get_property_defs(
+    EXPORTING
+      pi_disp_lang                   = sy-langu    " Language ID
+    IMPORTING
+      pet_attr_defs                  = pet_attr_defs
+      pet_allowed_parent_types       = pet_allowed_parent_types
+      pet_allowed_child_types        = pet_allowed_child_types
+      pet_allowed_ident_busobj_types = pet_allowed_ident_busobj_types
+      pet_allowed_parent_types_ext   = pet_allowed_parent_types_ext
+      pet_allowed_child_types_ext    = pet_allowed_child_types_ext
+  ).
+
+  DATA: ls_order_hdr      TYPE bapi_alm_order_header_e.
+  DATA: ls_attr_def       LIKE LINE OF pet_attr_defs.
+  DATA: ls_disp_name      TYPE /otx/rm_wsci_s_attr_disp_name,
+        ls_tj02t          TYPE tj02t,
+        ls_attr_def_2     TYPE /otx/rm_wsci_s_attr_def,
+        ls_sattr_def      TYPE /otx/rm_wsci_s_subattr_def,
+        ls_afih           TYPE afih,
+        ls_aufk           TYPE aufk.
+
+*AFIH	AUFNR
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_order_hdr
+      pi_struct_attr = c_attr_name_orderid
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+*AFIH	EQUNR
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_order_hdr
+      pi_struct_attr = c_attr_name_equipment
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+*AFIH	BAUTL
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_order_hdr
+      pi_struct_attr = c_attr_name_assembly
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+*AFIH	IWERK
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_order_hdr
+      pi_struct_attr = c_attr_name_planplant
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+*AFIH	INGPR
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_order_hdr
+      pi_struct_attr = c_attr_name_plangroup
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+*AFIH	GEWRK
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_order_hdr
+      pi_struct_attr = c_attr_name_mn_wk_ctr
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+*AFIH	WARPL
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_order_hdr
+      pi_struct_attr = c_attr_name_mntplan
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+*AFIH	WAPOS
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_order_hdr
+      pi_struct_attr = c_attr_name_maintitem
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+*AFIH	REVNR
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_order_hdr
+      pi_struct_attr = c_attr_name_revision
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+*AUFK	AUART
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_order_hdr
+      pi_struct_attr = c_attr_name_order_type
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+*AUFK	ERNAM
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_order_hdr
+      pi_struct_attr = c_attr_name_entered_by
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+*AUFK	ERDAT
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_order_hdr
+      pi_struct_attr = c_attr_name_enter_date
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+*AUFK	KTEXT
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_order_hdr
+      pi_struct_attr = c_attr_name_short_text
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+*AUFK WERKS
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_aufk
+      pi_struct_attr = c_attr_name_werks
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+*AUFK	KOSTV
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_order_hdr
+      pi_struct_attr = c_attr_name_respcctr
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+*AUFK	STORT
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_order_hdr
+      pi_struct_attr = c_attr_name_location
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+*AUFK	PSPEL
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_order_hdr
+      pi_struct_attr = c_attr_name_wbs_elem
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+*ILOA	TPLNR
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_order_hdr
+      pi_struct_attr = c_attr_name_funct_loc
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+*ILOA	EQFNR
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_order_hdr
+      pi_struct_attr = c_attr_name_sortfield
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+*ILOA	SWERK
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_order_hdr
+      pi_struct_attr = c_attr_name_maintplant
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+*AFKO	GLTRP
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_order_hdr
+      pi_struct_attr = c_attr_name_finish_date
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+*AFKO	GSTRP
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_order_hdr
+      pi_struct_attr = c_attr_name_start_date
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+*AFKO	PLNTY
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_order_hdr
+      pi_struct_attr = c_attr_name_task_list_type
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+*AFKO	PLNNR
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_order_hdr
+      pi_struct_attr = c_attr_name_task_list_group
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+*AFKO	PLNAL
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_order_hdr
+      pi_struct_attr = c_attr_name_group_counter
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+*AFIH	ADDAT
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_order_hdr
+      pi_struct_attr = c_attr_name_refdate
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+*AFIH IPHAS
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_afih
+      pi_struct_attr = c_attr_name_iphas
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+*AFIH	ILART
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_order_hdr
+      pi_struct_attr = c_attr_name_pmacttype
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+*AFIH	QMNUM
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_order_hdr
+      pi_struct_attr = c_attr_name_notif_no
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+*ILOA	MSGRP
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_order_hdr
+      pi_struct_attr = c_attr_name_maintroom
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+*ILOA	BEBER
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_order_hdr
+      pi_struct_attr = c_attr_name_plsectn
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+*JEST STATUS
+*SET
+  CLEAR ls_attr_def.
+  ls_attr_def-key = c_attr_name_status_set.
+  ls_attr_def-data_type
+    = /otx/rm_wsc_if_xecm_service=>c_data_type_group.
+  ls_attr_def-multivalue = abap_true.
+  ls_disp_name-name = ls_attr_def-key.
+  ls_disp_name-lang = 'E'.
+  APPEND ls_disp_name TO ls_attr_def-disp_names.
+
+*STATUS ID
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_tj02t
+      pi_struct_attr = 'ISTAT'
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def_2.
+  ls_attr_def_2-key = c_attr_name_status_id.
+  MOVE-CORRESPONDING ls_attr_def_2 TO ls_sattr_def.         "#EC ENHOK
+  APPEND ls_sattr_def TO ls_attr_def-subattrs.              "#EC ENHOK
+
+*STXT
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_tj02t
+      pi_struct_attr = 'TXT04'
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def_2.
+  ls_attr_def_2-key = c_attr_name_status_stxt.
+  MOVE-CORRESPONDING ls_attr_def_2 TO ls_sattr_def.         "#EC ENHOK
+  APPEND ls_sattr_def TO ls_attr_def-subattrs.              "#EC ENHOK
+
+*LTXT
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_tj02t
+      pi_struct_attr = 'TXT30'
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def_2.
+  ls_attr_def_2-key = c_attr_name_status_ltxt.
+  MOVE-CORRESPONDING ls_attr_def_2 TO ls_sattr_def.         "#EC ENHOK
+  APPEND ls_sattr_def TO ls_attr_def-subattrs.              "#EC ENHOK
+  APPEND ls_attr_def TO pet_attr_defs.
+
+*Add relations
+*  APPEND /otx/rm_pm_cl_constants=>c_bo_order_operation_super
+*      TO pet_allowed_child_types.
+*  APPEND /otx/rm_pm_cl_constants=>c_bo_tasklist_super
+*      TO pet_allowed_parent_types.
+  APPEND /otx/rm_pm_cl_constants=>c_bo_order_super
+      TO pet_allowed_parent_types.
+  APPEND /otx/rm_pm_cl_constants=>c_bo_notification_super
+      TO pet_allowed_parent_types.
+  APPEND /otx/rm_pm_cl_constants=>c_bo_equi_super
+      TO pet_allowed_parent_types.
+  APPEND /otx/rm_pm_cl_constants=>c_bo_func_loc_super
+      TO pet_allowed_parent_types.
+  APPEND /otx/rm_pm_cl_constants=>c_bo_material_super
+      TO pet_allowed_parent_types.
+
+ENDMETHOD.

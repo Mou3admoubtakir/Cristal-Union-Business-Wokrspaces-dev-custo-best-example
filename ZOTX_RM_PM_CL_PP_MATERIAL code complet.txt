@@ -1,0 +1,379 @@
+*----------- Include : ZOTX_RM_PM_CL_PP_MATERIAL=====CCDEF
+*"* use this source file for any type declarations (class
+*"* definitions, interfaces or data types) you need for method
+*"* implementation or private method's signature
+
+*----------- Include : ZOTX_RM_PM_CL_PP_MATERIAL=====CCMAC
+*"* use this source file for any macro definitions you need
+*"* in the implementation part of the class
+
+*----------- Include : ZOTX_RM_PM_CL_PP_MATERIAL=====CCIMP
+*"* local class implementation for public class
+*"* use this source file for the implementation part of
+*"* local helper classes
+
+*----------- Include : ZOTX_RM_PM_CL_PP_MATERIAL=====CU
+class ZOTX_RM_PM_CL_PP_MATERIAL definition
+  public
+  inheriting from /OTX/RM_WSCI_CL_WSPROV_DEFAULT
+  final
+  create public .
+
+*"* public components of class ZOTX_RM_PM_CL_PP_MATERIAL
+*"* do not include other source files here!!!
+public section.
+
+  constants C_ATTR_NAME_MATERIAL_TYPE type STRING value 'MATL_TYPE' ##NO_TEXT.
+  constants C_ATTR_NAME_SECTOR type STRING value 'IND_SECTOR' ##NO_TEXT.
+  constants C_ATTR_NAME_DIVISION type STRING value 'DIVISION' ##NO_TEXT.
+  constants C_ATTR_NAME_MATERIAL_GROUP type STRING value 'MATL_GROUP' ##NO_TEXT.
+  constants C_ATTR_NAME_PRODUCT_HIERARCHY type STRING value 'PROD_HIER' ##NO_TEXT.
+  constants C_ATTR_NAME_NET_WEIGHT type STRING value 'NET_WEIGHT' ##NO_TEXT.
+  constants C_ATTR_NAME_MATL_DESC type STRING value 'MATL_DESC' ##NO_TEXT.
+  constants C_ATTR_NAME_STANDARD_PRICE type STRING value 'STD_PRICE' ##NO_TEXT.
+  constants C_ATTR_NAME_MATNR type STRING value 'MATNR' ##NO_TEXT.
+
+  methods GET_PROPERTIES
+    redefinition .
+  methods GET_PROPERTY_DEFS
+    redefinition .
+*----------- Include : ZOTX_RM_PM_CL_PP_MATERIAL=====CO
+*"* protected components of class /OTX/RM_WSCI_CL_WSPP_EQUI
+*"* do not include other source files here!!!
+protected section.
+*----------- Include : ZOTX_RM_PM_CL_PP_MATERIAL=====CI
+*"* private components of class ZOTX_RM_PM_CL_PP_MATERIAL
+*"* do not include other source files here!!!
+private section.
+*----------- Include : ZOTX_RM_PM_CL_PP_MATERIAL=====CP
+class-pool .
+*"* class pool for class ZOTX_RM_PM_CL_PP_MATERIAL
+
+*"* local type definitions
+include ZOTX_RM_PM_CL_PP_MATERIAL=====ccdef.
+
+*"* class ZOTX_RM_PM_CL_PP_MATERIAL definition
+*"* public declarations
+  include ZOTX_RM_PM_CL_PP_MATERIAL=====cu.
+*"* protected declarations
+  include ZOTX_RM_PM_CL_PP_MATERIAL=====co.
+*"* private declarations
+  include ZOTX_RM_PM_CL_PP_MATERIAL=====ci.
+endclass. "ZOTX_RM_PM_CL_PP_MATERIAL definition
+
+*"* macro definitions
+include ZOTX_RM_PM_CL_PP_MATERIAL=====ccmac.
+*"* local class implementation
+include ZOTX_RM_PM_CL_PP_MATERIAL=====ccimp.
+
+class ZOTX_RM_PM_CL_PP_MATERIAL implementation.
+*"* method's implementations
+  include methods.
+endclass. "ZOTX_RM_PM_CL_PP_MATERIAL implementation
+
+*----------- Include : ZOTX_RM_PM_CL_PP_MATERIAL=====CT
+*"* dummy include to reduce generation dependencies between
+*"* class ZOTX_RM_PM_CL_PP_MATERIAL and it's users.
+*"* touched if any type reference has been changed
+*----------- Include : ZOTX_RM_PM_CL_PP_MATERIAL=====CM001
+METHOD GET_PROPERTIES.
+
+  DATA:
+    l_error_msg           TYPE string,
+    l_id                  TYPE matnr,
+    ls_material_general   TYPE bapimatdoa,
+    ls_material_valuation TYPE bapimatdobew,
+    ls_material_return    TYPE bapireturn,
+*{   INSERT         CRDK953707                                        2
+    ls_matl_type          TYPE bapimatdoa-matl_type,
+*}   INSERT
+    ls_child              TYPE /otx/rm_wsci_s_bor,
+    ls_bom_item           TYPE stpob,
+    lt_bom_items          TYPE TABLE OF stpob,
+    lt_attr_defs          TYPE /otx/rm_wsci_tt_attr_def,
+    ls_attr_def           TYPE /otx/rm_wsci_s_attr_def,
+    ls_prop               TYPE LINE OF /otx/rm_wsci_tt_properties,
+*{   INSERT         CRDK953707                                        1
+    lt_werks                TYPE TABLE OF werks_d,
+    ls_werks                TYPE werks_d,
+*}   INSERT
+    l_matnr_conv          TYPE matnr.
+
+  FIELD-SYMBOLS:
+    <ls_bor_properties> TYPE /otx/rm_wsci_s_bor_properties.
+
+
+  CALL METHOD super->get_properties
+    EXPORTING
+      pit_bor            = pit_bor
+    IMPORTING
+      pet_bor_properties = pet_bor_properties.
+
+  CALL METHOD get_property_defs
+    IMPORTING
+      pet_attr_defs = lt_attr_defs.
+
+  " Goes through each given BOR.
+  LOOP AT pet_bor_properties ASSIGNING <ls_bor_properties>.
+
+    " Gets the details.
+    l_id = <ls_bor_properties>-bor-id.
+    CLEAR:
+      ls_material_general,
+      ls_material_valuation,
+      ls_material_return.
+    CALL FUNCTION 'BAPI_MATERIAL_GET_DETAIL'
+      EXPORTING
+        material              = l_id
+      IMPORTING
+        material_general_data = ls_material_general
+        materialvaluationdata = ls_material_valuation
+        return                = ls_material_return.
+
+    IF ls_material_return-type = c_bapi_err.
+
+      l_error_msg = ls_material_return-message.
+      CREATE OBJECT <ls_bor_properties>-exception
+        EXPORTING
+          m_error_text = l_error_msg.
+      CONTINUE.
+
+    ENDIF.
+*{   INSERT         CRDK953707                                        1
+    " Filter
+     CLEAR: ls_matl_type.
+     SELECT SINGLE value FROM ZAEROW_XECMPARAM
+     INTO  ls_matl_type
+     WHERE sysid = sy-sysid
+     AND   type  = 'W'
+     AND   object = 'BUS1001006'
+     AND   param = 'MATL_TYPE'
+     AND   value = ls_material_general-MATL_TYPE.
+
+
+    IF ls_matl_type is initial.
+      CREATE OBJECT <ls_bor_properties>-exception
+      TYPE
+        /OTX/CX_RM_WSCI_NO_DECLARING
+      EXPORTING
+            m_error_text = 'Type d''article non pris en charge'
+            M_LONG_ERROR_TEXT = 'Type d''article non pris en charge'.
+      CONTINUE.
+   ENDIF.
+*
+*}   INSERT
+
+    " Sets the child materials, if any.
+    CLEAR: lt_bom_items.
+    CALL FUNCTION 'MGW0_COMPONENTS'
+      EXPORTING
+        mgw0_article    = l_id
+      TABLES
+        mgw0_components = lt_bom_items
+      EXCEPTIONS
+        not_found.
+
+    IF sy-subrc = 0.
+      LOOP AT lt_bom_items INTO ls_bom_item.
+        ls_child-id = ls_bom_item-idnrk.
+        ls_child-type = /otx/rm_pm_cl_constants=>c_bo_material_super.
+        APPEND ls_child TO <ls_bor_properties>-children.
+      ENDLOOP.
+    ENDIF.
+
+
+    " Gets the properties.
+    LOOP AT lt_attr_defs INTO ls_attr_def.
+
+      CLEAR ls_prop.
+
+      ls_prop-def = ls_attr_def.
+
+      CASE ls_attr_def-key.
+
+        WHEN c_attr_name_material_type.
+          APPEND ls_material_general-matl_type TO ls_prop-values.
+
+        WHEN c_attr_name_sector.
+          APPEND ls_material_general-ind_sector TO ls_prop-values.
+
+        WHEN c_attr_name_division.
+          APPEND ls_material_general-division TO ls_prop-values.
+
+        WHEN c_attr_name_material_group.
+          APPEND ls_material_general-matl_group TO ls_prop-values.
+
+        WHEN c_attr_name_product_hierarchy.
+          APPEND ls_material_general-prod_hier TO ls_prop-values.
+
+        WHEN c_attr_name_net_weight.
+          APPEND ls_material_general-net_weight TO ls_prop-values.
+
+        WHEN c_attr_name_standard_price.
+          APPEND ls_material_valuation-std_price TO ls_prop-values.
+
+        WHEN c_attr_name_matl_desc.
+          APPEND ls_material_general-matl_desc TO ls_prop-values.
+
+        WHEN c_attr_name_matnr.
+          CALL FUNCTION 'CONVERSION_EXIT_MATN1_OUTPUT'
+            EXPORTING
+              input  = l_id
+            IMPORTING
+              output = l_matnr_conv.
+          APPEND l_matnr_conv TO ls_prop-values.
+*{   INSERT         CRDK953707                                        2
+
+        WHEN 'PLANT'.
+          " Get the divisions in MARC for the material number
+          SELECT werks
+            INTO TABLE lt_werks
+            FROM marc
+            WHERE matnr = l_id.
+          " Add the divisions into the properties
+            LOOP AT lt_werks INTO ls_werks.
+              APPEND ls_werks TO ls_prop-values.
+            ENDLOOP.
+*
+*}   INSERT
+
+        WHEN OTHERS.
+          " Maybe this property was already returned
+          " by the parent method.
+          CONTINUE.
+
+      ENDCASE.
+
+      APPEND ls_prop TO <ls_bor_properties>-properties.
+
+    ENDLOOP.
+
+  ENDLOOP.
+
+ENDMETHOD.
+*----------- Include : ZOTX_RM_PM_CL_PP_MATERIAL=====CM002
+METHOD GET_PROPERTY_DEFS.
+
+  DATA:
+    ls_material_general   TYPE bapimatdoa,
+    ls_material_valuation TYPE bapimatdobew,
+    ls_mara               TYPE mara,
+*{   INSERT         CRDK953707                                        2
+    ls_plant TYPE BAPIMATALL,
+*}   INSERT
+    ls_attr_def           TYPE /otx/rm_wsci_s_attr_def.
+
+
+  CLEAR:
+    pet_attr_defs,
+    pet_allowed_parent_types,
+    pet_allowed_child_types.
+
+
+  CALL METHOD super->get_property_defs
+    EXPORTING
+      pi_disp_lang             = pi_disp_lang
+    IMPORTING
+      pet_attr_defs            = pet_attr_defs
+      pet_allowed_parent_types = pet_allowed_parent_types
+      pet_allowed_child_types  = pet_allowed_child_types.
+
+
+  APPEND /otx/rm_pm_cl_constants=>c_bo_material_super
+      TO pet_allowed_child_types.
+
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_material_general
+      pi_struct_attr = c_attr_name_material_type
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_material_general
+      pi_struct_attr = c_attr_name_sector
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_material_general
+      pi_struct_attr = c_attr_name_division
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_material_general
+      pi_struct_attr = c_attr_name_material_group
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_material_general
+      pi_struct_attr = c_attr_name_product_hierarchy
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_material_general
+      pi_struct_attr = c_attr_name_net_weight
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_material_valuation
+      pi_struct_attr = c_attr_name_standard_price
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_material_general
+      pi_struct_attr = c_attr_name_matl_desc
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_mara
+      pi_struct_attr = c_attr_name_matnr
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+*{   INSERT         CRDK953707                                        1
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_plant
+      pi_struct_attr = 'PLANT'
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+*
+*}   INSERT
+
+ENDMETHOD.

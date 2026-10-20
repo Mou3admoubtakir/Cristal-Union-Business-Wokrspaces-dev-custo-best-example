@@ -1,0 +1,749 @@
+*----------- Include : /OTX/RM_PM_CL_PP_EQUIPMENT====CCDEF
+*"* use this source file for any type declarations (class
+*"* definitions, interfaces or data types) you need for method
+*"* implementation or private method's signature
+*----------- Include : /OTX/RM_PM_CL_PP_EQUIPMENT====CCMAC
+*"* use this source file for any macro definitions you need
+*"* in the implementation part of the class
+
+*----------- Include : /OTX/RM_PM_CL_PP_EQUIPMENT====CCIMP
+*"* local class implementation for public class
+*"* use this source file for the implementation part of
+*"* local helper classes
+
+*----------- Include : /OTX/RM_PM_CL_PP_EQUIPMENT====CU
+class /OTX/RM_PM_CL_PP_EQUIPMENT definition
+  public
+  inheriting from /OTX/RM_WSCI_CL_WSPROV_DEFAULT
+  final
+  create public .
+
+*"* public components of class /OTX/RM_PM_CL_PP_EQUIPMENT
+*"* do not include other source files here!!!
+public section.
+
+  constants C_ATTR_NAME_CATEGORY type STRING value 'EQUICATGRY'. "#EC NOTEXT
+  constants C_ATTR_NAME_SERIAL_NO type STRING value 'SERIALNO'. "#EC NOTEXT
+  constants C_ATTR_NAME_CREATION_DATE type STRING value 'READ_CRDAT'. "#EC NOTEXT
+  constants C_ATTR_NAME_LOCATION_CITY type STRING value 'CITY1'. "#EC NOTEXT
+  constants C_ATTR_NAME_LOCATION_COUNTRY type STRING value 'COUNTRY'. "#EC NOTEXT
+  constants C_ATTR_NAME_LOCATION_NAME type STRING value 'NAME1'. "#EC NOTEXT
+  constants C_ATTR_NAME_PLAN_PLANT type STRING value 'PLANPLANT'. "#EC NOTEXT
+  constants C_ATTR_NAME_PLAN_GROUP type STRING value 'PLANGROUP'. "#EC NOTEXT
+  constants C_ATTR_NAME_CATALOG_PROFILE type STRING value 'CATPROFILE'. "#EC NOTEXT
+  constants C_ATTR_NAME_MANUFACTURE type STRING value 'MANFACTURE'. "#EC NOTEXT
+  constants C_ATTR_NAME_MODEL_NUMBER type STRING value 'MANMODEL'. "#EC NOTEXT
+  constants C_ATTR_NAME_MODEL_MAN_PARTNO type STRING value 'MANPARNO'. "#EC NOTEXT
+  constants C_ATTR_NAME_MODEL_MAN_SERIALNO type STRING value 'MANSERNO'. "#EC NOTEXT
+  constants C_ATTR_NAME_DESC type STRING value 'DESCRIPT'. "#EC NOTEXT
+  constants C_ATTR_NAME_TECHID type STRING value 'TECHID'. "#EC NOTEXT
+  constants C_ATTR_NAME_OBJECTTYPE type STRING value 'OBJECTTYPE'. "#EC NOTEXT
+  constants C_ATTR_NAME_SORTFIELD type STRING value 'SORTFIELD'. "#EC NOTEXT
+  constants C_ATTR_NAME_ABCINDIC type STRING value 'ABCINDIC'. "#EC NOTEXT
+  constants C_ATTR_NAME_WORK_CTR type STRING value 'WORK_CTR'. "#EC NOTEXT
+  constants C_ATTR_NAME_CONSTTYPE type STRING value 'CONSTTYPE'. "#EC NOTEXT
+  constants C_ATTR_NAME_MATERIAL type STRING value 'MATERIAL'. "#EC NOTEXT
+  constants C_ATTR_NAME_WARRANTY_SET type STRING value 'WARRANTY_SET'. "#EC NOTEXT
+  constants C_ATTR_NAME_WARRANTY_TYPE type STRING value 'WARRANTY_TYPE'. "#EC NOTEXT
+  constants C_ATTR_NAME_WARRANTY_NUMBER type STRING value 'WARRANTY_NR'. "#EC NOTEXT
+  constants C_ATTR_NAME_WARRANTY_TXT type STRING value 'WARRANTY_TXT'. "#EC NOTEXT
+  constants C_ATTR_NAME_EQUNR type STRING value 'EQUNR'. "#EC NOTEXT
+
+  methods GET_PROPERTIES
+    redefinition .
+  methods GET_PROPERTY_DEFS
+    redefinition .
+*----------- Include : /OTX/RM_PM_CL_PP_EQUIPMENT====CO
+*"* protected components of class /OTX/RM_WSCI_CL_WSPP_EQUI
+*"* do not include other source files here!!!
+protected section.
+*----------- Include : /OTX/RM_PM_CL_PP_EQUIPMENT====CI
+*"* private components of class /OTX/RM_PM_CL_PP_EQUIPMENT
+*"* do not include other source files here!!!
+private section.
+*----------- Include : /OTX/RM_PM_CL_PP_EQUIPMENT====CP
+class-pool .
+*"* class pool for class /OTX/RM_PM_CL_PP_EQUIPMENT
+
+*"* local type definitions
+include /OTX/RM_PM_CL_PP_EQUIPMENT====ccdef.
+
+*"* class /OTX/RM_PM_CL_PP_EQUIPMENT definition
+*"* public declarations
+  include /OTX/RM_PM_CL_PP_EQUIPMENT====cu.
+*"* protected declarations
+  include /OTX/RM_PM_CL_PP_EQUIPMENT====co.
+*"* private declarations
+  include /OTX/RM_PM_CL_PP_EQUIPMENT====ci.
+endclass. "/OTX/RM_PM_CL_PP_EQUIPMENT definition
+
+*"* macro definitions
+include /OTX/RM_PM_CL_PP_EQUIPMENT====ccmac.
+*"* local class implementation
+include /OTX/RM_PM_CL_PP_EQUIPMENT====ccimp.
+
+class /OTX/RM_PM_CL_PP_EQUIPMENT implementation.
+*"* method's implementations
+  include methods.
+endclass. "/OTX/RM_PM_CL_PP_EQUIPMENT implementation
+
+*----------- Include : /OTX/RM_PM_CL_PP_EQUIPMENT====CM001
+METHOD get_properties.
+
+  DATA:
+    l_error_msg         TYPE string,
+    l_id                TYPE /otx/rm_pm_cl_constants=>typ_equi_key,
+    l_func_loc_id       TYPE /otx/rm_pm_cl_constants=>typ_func_loc_key,
+    ls_equip_general    TYPE bapi_itob,
+    ls_equip_specific   TYPE bapi_itob_eq_only,
+    ls_equip_return     TYPE bapiret2,
+    lt_adrc             TYPE TABLE OF adrc,
+    ls_adrc             TYPE adrc,
+    ls_parent           TYPE /otx/rm_wsci_s_bor,
+    ls_child            TYPE /otx/rm_wsci_s_bor,
+    lt_attr_defs        TYPE /otx/rm_wsci_tt_attr_def,
+    ls_attr_def         TYPE /otx/rm_wsci_s_attr_def,
+    ls_prop             TYPE LINE OF /otx/rm_wsci_tt_properties,
+    l_utc_string        TYPE string,
+    ls_rcr01            TYPE rcr01,
+    l_value             TYPE string.
+
+  DATA: BEGIN OF ls_warranty,
+         gaart TYPE gaart,
+         ktext TYPE txt40,
+         mganr TYPE mganr,
+        END OF ls_warranty,
+        lt_warranty LIKE STANDARD TABLE OF ls_warranty,
+        lt_values_row       TYPE /otx/rm_tt_stringmatrix,
+        lt_values           TYPE /otx/rm_tt_stringtab,
+        ls_tli_key   TYPE /otx/rm_pm_cl_constants=>typ_tli_key.
+
+  DATA: BEGIN OF ls_stat_range,
+          sign   TYPE c LENGTH 1,
+          option TYPE c LENGTH 2,
+          low    TYPE plko-statu,
+          high   TYPE plko-statu,
+        END OF ls_stat_range,
+        lt_stat_range LIKE STANDARD TABLE OF ls_stat_range.
+
+  DATA: BEGIN OF ls_const_range,
+          sign   TYPE c LENGTH 1,
+          option TYPE c LENGTH 2,
+          low    TYPE plko-istru,
+          high   TYPE plko-istru,
+        END OF ls_const_range,
+        lt_const_range LIKE STANDARD TABLE OF ls_const_range.
+
+  DATA : lt_sel_tab TYPE STANDARD TABLE OF rihplko,
+         ls_sel_tab TYPE rihplko,
+         lt_stpo    TYPE STANDARD TABLE OF rihstpx,
+         l_stpo     TYPE rihstpx,
+         l_plnst    TYPE t412-plnst.
+
+  FIELD-SYMBOLS:
+    <ls_bor_properties> TYPE /otx/rm_wsci_s_bor_properties.
+
+  CALL METHOD super->get_properties
+    EXPORTING
+      pit_bor            = pit_bor
+    IMPORTING
+      pet_bor_properties = pet_bor_properties.
+
+  CALL METHOD get_property_defs
+    IMPORTING
+      pet_attr_defs = lt_attr_defs.
+
+  ls_stat_range-sign = 'I'.
+  ls_stat_range-option = 'EQ'.
+  SELECT plnst INTO l_plnst
+               FROM t412
+              WHERE freif = /otx/rm_pm_cl_constants=>c_true.
+    ls_stat_range-low = l_plnst.
+    APPEND ls_stat_range TO lt_stat_range.
+  ENDSELECT.
+
+  " Goes through each given BOR.
+  LOOP AT pet_bor_properties ASSIGNING <ls_bor_properties>.
+
+    " Gets the details.
+    l_id = <ls_bor_properties>-bor-id.
+    CALL FUNCTION 'BAPI_EQUI_GETDETAIL'
+      EXPORTING
+        equipment         = l_id
+      IMPORTING
+        data_general_exp  = ls_equip_general
+        data_specific_exp = ls_equip_specific
+        return            = ls_equip_return.
+
+    IF ls_equip_return-type = c_bapi_err.
+      l_error_msg = ls_equip_return-message.
+      CREATE OBJECT <ls_bor_properties>-exception
+        EXPORTING
+          m_error_text = l_error_msg.
+      CONTINUE.
+    ENDIF.
+
+    CLEAR lt_stpo[].
+    CALL FUNCTION 'PM_HIERARCHY_CALL_BOM_EQUI'
+      EXPORTING
+        equnr           = l_id
+        levdo           = 99
+        selmod          = 'D'
+        stkkz           = /otx/rm_pm_cl_constants=>c_true
+      TABLES
+        stpo_tab        = lt_stpo
+      EXCEPTIONS
+        no_hierarchy    = 01
+        no_selection    = 02
+        no_valid_equnr  = 03
+        no_valid_selmod = 04.
+    IF NOT sy-subrc IS INITIAL.
+*If fails no fatal error, therefore continue
+*      MESSAGE ID sy-msgid TYPE sy-msgty NUMBER sy-msgno
+*              WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4
+*              INTO l_error_msg.
+*      CREATE OBJECT <ls_bor_properties>-exception
+*        EXPORTING
+*          m_error_text = l_error_msg.
+*      CONTINUE.
+    ENDIF.
+
+    CLEAR lt_const_range.
+    ls_const_range-sign   = 'I'.
+    ls_const_range-option = 'EQ'.
+    LOOP AT lt_stpo INTO l_stpo.
+      ls_const_range-low    = l_stpo-idnrk.
+      APPEND ls_const_range TO lt_const_range.
+*Add Material relation
+      ls_child-type = /otx/rm_pm_cl_constants=>c_bo_material_super.
+      ls_child-id = ls_const_range-low.
+      APPEND ls_child TO <ls_bor_properties>-children.
+    ENDLOOP.
+
+    CLEAR lt_sel_tab.
+    SUBMIT riplko10 AND RETURN
+      WITH dy_tcode = 'IA09'
+      WITH pn_datuv = sy-datum
+      WITH dy_selm  = 'D'
+      WITH op_strat = space
+      WITH pn_equi  = /otx/rm_pm_cl_constants=>c_true
+      WITH pn_ihan  = /otx/rm_pm_cl_constants=>c_true
+      WITH pn_equnr = l_id
+      WITH ind_stat = /otx/rm_pm_cl_constants=>c_true
+      WITH statu    IN lt_stat_range
+      WITH istru    IN lt_const_range.
+    IMPORT sel_tab = lt_sel_tab FROM MEMORY ID 'RIPLKO10'.
+
+*Related Task lists
+    LOOP AT lt_sel_tab INTO ls_sel_tab.
+      IF NOT ls_sel_tab-plnnr IS INITIAL.
+        ls_child-type = /otx/rm_pm_cl_constants=>c_bo_tasklist_super.
+        ls_tli_key-plnty  = ls_sel_tab-plnty.
+        ls_tli_key-plnnr  = ls_sel_tab-plnnr.
+        ls_tli_key-plnal  = ls_sel_tab-plnal.
+        ls_child-id = ls_tli_key.
+        APPEND ls_child TO <ls_bor_properties>-children.
+      ENDIF.
+    ENDLOOP.
+
+*Get warranties
+    SELECT bgmkobj~gaart ktext bgmkobj~mganr
+      INTO TABLE lt_warranty
+      FROM equi
+      INNER JOIN bgmkobj ON bgmkobj~j_objnr = equi~objnr
+      INNER JOIN t790g_t ON t790g_t~gaart = bgmkobj~gaart
+      WHERE equi~equnr = l_id
+        AND t790g_t~langu = sy-langu.
+
+    " Gets the address.
+    CLEAR: lt_adrc, ls_adrc.
+    CALL FUNCTION '/DSD/RP_GET_ADR_OF_EQUI'
+      EXPORTING
+        if_equnr               = l_id
+      TABLES
+        et_adrc                = lt_adrc
+      EXCEPTIONS
+        no_equipment_available = 1
+        no_location            = 2
+        no_address             = 3
+        OTHERS                 = 4.
+    IF sy-subrc = 0.
+      READ TABLE lt_adrc INTO ls_adrc INDEX 1.
+    ENDIF.
+
+    " Sets the parent (equipment or functional location), if any.
+    IF ls_equip_specific-read_supeq IS NOT INITIAL.
+      ls_parent-id = ls_equip_specific-read_supeq.
+      ls_parent-type = /otx/rm_pm_cl_constants=>c_bo_equi_super.
+      APPEND ls_parent TO <ls_bor_properties>-parents.
+    ENDIF.
+
+    IF ls_equip_specific-read_floc IS NOT INITIAL.
+      " Convert external Function Location ID to internal ID
+      CALL FUNCTION 'CONVERSION_EXIT_TPLNR_INPUT'
+        EXPORTING
+          input     = ls_equip_specific-read_floc
+        IMPORTING
+          output    = l_func_loc_id
+        EXCEPTIONS
+          not_found = 1
+          OTHERS    = 2.
+      IF sy-subrc NE 0.
+        l_error_msg =
+           'Equipment: Could not convert iternal ID ' &
+           'of parent functional location of equipment'.    "#EC NOTEXT
+        CONCATENATE l_error_msg l_id INTO l_error_msg
+                                     SEPARATED BY space.
+        CREATE OBJECT <ls_bor_properties>-exception
+          EXPORTING
+            m_error_text = l_error_msg.
+        CONTINUE.
+      ENDIF.
+
+      ls_parent-id = l_func_loc_id.
+      ls_parent-type = /otx/rm_pm_cl_constants=>c_bo_func_loc_super.
+      APPEND ls_parent TO <ls_bor_properties>-parents.
+    ENDIF.
+
+    IF ls_equip_specific-material IS NOT INITIAL.
+      ls_child-id = ls_equip_specific-material.
+      ls_child-type = /otx/rm_pm_cl_constants=>c_bo_material_super.
+      APPEND ls_child TO <ls_bor_properties>-children.
+    ENDIF.
+
+    IF ls_equip_general-consttype IS NOT INITIAL.
+      ls_child-id = ls_equip_general-consttype.
+      ls_child-type = /otx/rm_pm_cl_constants=>c_bo_material_super.
+      APPEND ls_child TO <ls_bor_properties>-children.
+    ENDIF.
+
+    " Gets the properties.
+    LOOP AT lt_attr_defs INTO ls_attr_def.
+
+      CLEAR ls_prop.
+      ls_prop-def = ls_attr_def.
+      CASE ls_attr_def-key.
+
+        WHEN c_attr_name_category.
+          APPEND ls_equip_specific-equicatgry TO ls_prop-values.
+
+        WHEN c_attr_name_serial_no.
+          CALL FUNCTION 'CONVERSION_EXIT_GERNR_OUTPUT'
+            EXPORTING
+              input  = ls_equip_specific-serialno
+            IMPORTING
+              output = l_value.
+          CONDENSE l_value.
+          APPEND l_value TO ls_prop-values.
+
+        WHEN c_attr_name_material.
+          CALL FUNCTION 'CONVERSION_EXIT_MATN1_OUTPUT'
+            EXPORTING
+              input  = ls_equip_specific-material
+            IMPORTING
+              output = l_value.
+          CONDENSE l_value.
+          APPEND l_value TO ls_prop-values.
+
+        WHEN c_attr_name_creation_date.
+          l_utc_string = convert_dats_to_string(
+            ls_equip_general-read_crdat ).
+          APPEND l_utc_string TO ls_prop-values.
+
+        WHEN c_attr_name_location_name.
+          APPEND ls_adrc-name1 TO ls_prop-values.
+
+        WHEN c_attr_name_location_city.
+          APPEND ls_adrc-city1 TO ls_prop-values.
+
+        WHEN c_attr_name_location_country.
+          APPEND ls_adrc-country TO ls_prop-values.
+
+        WHEN c_attr_name_plan_plant.
+          APPEND ls_equip_general-planplant TO ls_prop-values.
+
+        WHEN c_attr_name_plan_group.
+          APPEND ls_equip_general-plangroup TO ls_prop-values.
+
+        WHEN c_attr_name_catalog_profile.
+          APPEND ls_equip_general-catprofile TO ls_prop-values.
+
+        WHEN c_attr_name_manufacture.
+          APPEND ls_equip_general-manfacture TO ls_prop-values.
+
+        WHEN c_attr_name_model_number.
+          APPEND ls_equip_general-manmodel TO ls_prop-values.
+
+        WHEN c_attr_name_model_man_partno.
+          APPEND ls_equip_general-manparno TO ls_prop-values.
+
+        WHEN c_attr_name_model_man_serialno.
+          APPEND ls_equip_general-manserno TO ls_prop-values.
+
+        WHEN c_attr_name_desc.
+          APPEND ls_equip_general-descript TO ls_prop-values.
+
+        WHEN c_attr_name_techid.
+          APPEND ls_equip_specific-techid TO ls_prop-values.
+
+        WHEN c_attr_name_objecttype.
+          APPEND ls_equip_general-objecttype TO ls_prop-values.
+
+        WHEN c_attr_name_sortfield.
+          APPEND ls_equip_general-sortfield TO ls_prop-values.
+
+        WHEN c_attr_name_abcindic.
+          APPEND ls_equip_general-abcindic TO ls_prop-values.
+
+        WHEN c_attr_name_work_ctr.
+          IF NOT ls_equip_general-work_ctr IS INITIAL.
+            CALL FUNCTION 'CR_WORKSTATION_READ'
+              EXPORTING
+                id        = ls_equip_general-work_ctr
+              IMPORTING
+                arbpl     = ls_rcr01-arbpl
+              EXCEPTIONS
+                not_found = 1
+                OTHERS    = 2.
+            IF sy-subrc <> 0.
+              l_error_msg =  'Could not find the work center for' &
+                 'ARBID = &1'.                              "#EC NOTEXT
+              REPLACE '&1' IN l_error_msg
+                         WITH ls_equip_general-work_ctr.
+              CREATE OBJECT <ls_bor_properties>-exception
+                EXPORTING
+                  m_error_text = l_error_msg.
+              EXIT.
+            ENDIF.
+            APPEND ls_rcr01-arbpl TO ls_prop-values.
+          ENDIF.
+
+        WHEN c_attr_name_consttype.
+          CALL FUNCTION 'CONVERSION_EXIT_ALPHA_OUTPUT'
+            EXPORTING
+              input  = ls_equip_general-consttype
+            IMPORTING
+              output = l_value.
+          CONDENSE l_value.
+          APPEND l_value TO ls_prop-values.
+
+        WHEN c_attr_name_warranty_set.
+          LOOP AT lt_warranty INTO ls_warranty.
+            CLEAR: lt_values_row, lt_values.
+            APPEND ls_warranty-gaart TO lt_values.
+            APPEND lt_values TO lt_values_row.
+
+            CLEAR lt_values.
+            APPEND ls_warranty-ktext TO lt_values.
+            APPEND lt_values TO lt_values_row.
+
+            CLEAR lt_values.
+            APPEND ls_warranty-mganr TO lt_values.
+            APPEND lt_values TO lt_values_row.
+
+            APPEND lt_values_row TO ls_prop-values_group.
+          ENDLOOP.
+
+        WHEN c_attr_name_equnr.
+          CALL FUNCTION 'CONVERSION_EXIT_ALPHA_OUTPUT'
+            EXPORTING
+              input  = l_id
+            IMPORTING
+              output = l_value.
+          CONDENSE l_value.
+          APPEND l_value TO ls_prop-values.
+
+        WHEN OTHERS.
+          " Maybe this property was already returned
+          " by the parent method.
+          CONTINUE.
+      ENDCASE.
+
+      APPEND ls_prop TO <ls_bor_properties>-properties.
+    ENDLOOP.
+  ENDLOOP.
+
+ENDMETHOD.
+*----------- Include : /OTX/RM_PM_CL_PP_EQUIPMENT====CM002
+METHOD get_property_defs.
+
+  DATA:
+    ls_equi           TYPE equi,
+    ls_equip_specific TYPE bapi_itob_eq_only,
+    ls_equip_general  TYPE bapi_itob,
+    ls_adrc           TYPE adrc,
+    ls_bgmkobj        TYPE bgmkobj,
+    ls_t790g_t        TYPE t790g_t,
+    ls_attr_def       TYPE /otx/rm_wsci_s_attr_def,
+    ls_disp_name      TYPE /otx/rm_wsci_s_attr_disp_name,
+    ls_attr_def_2     TYPE /otx/rm_wsci_s_attr_def,
+    ls_sattr_def      TYPE /otx/rm_wsci_s_subattr_def.
+
+
+  CLEAR:
+    pet_attr_defs,
+    pet_allowed_parent_types,
+    pet_allowed_child_types.
+
+
+  CALL METHOD super->get_property_defs
+    EXPORTING
+      pi_disp_lang             = pi_disp_lang
+    IMPORTING
+      pet_attr_defs            = pet_attr_defs
+      pet_allowed_parent_types = pet_allowed_parent_types
+      pet_allowed_child_types  = pet_allowed_child_types.
+
+  APPEND /otx/rm_pm_cl_constants=>c_bo_func_loc_super
+      TO pet_allowed_parent_types.
+  APPEND /otx/rm_pm_cl_constants=>c_bo_equi_super
+      TO pet_allowed_parent_types.
+  APPEND /otx/rm_pm_cl_constants=>c_bo_material_super
+      TO pet_allowed_child_types.
+  APPEND /otx/rm_pm_cl_constants=>c_bo_equi_super
+      TO  pet_allowed_child_types.
+  APPEND /otx/rm_pm_cl_constants=>c_bo_tasklist_super
+      TO  pet_allowed_child_types.
+
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_equip_specific
+      pi_struct_attr = c_attr_name_category
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_equip_specific
+      pi_struct_attr = c_attr_name_serial_no
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_equip_specific
+      pi_struct_attr = c_attr_name_material
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_equip_general
+      pi_struct_attr = c_attr_name_creation_date
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_adrc
+      pi_struct_attr = c_attr_name_location_name
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_adrc
+      pi_struct_attr = c_attr_name_location_city
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_adrc
+      pi_struct_attr = c_attr_name_location_country
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_equip_general
+      pi_struct_attr = c_attr_name_plan_plant
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_equip_general
+      pi_struct_attr = c_attr_name_plan_group
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_equip_general
+      pi_struct_attr = c_attr_name_catalog_profile
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_equip_general
+      pi_struct_attr = c_attr_name_manufacture
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_equip_general
+      pi_struct_attr = c_attr_name_model_number
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_equip_general
+      pi_struct_attr = c_attr_name_model_man_partno
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_equip_general
+      pi_struct_attr = c_attr_name_model_man_serialno
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_equip_general
+      pi_struct_attr = c_attr_name_desc
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_equip_specific
+      pi_struct_attr = c_attr_name_techid
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_equip_general
+      pi_struct_attr = c_attr_name_objecttype
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_equip_general
+      pi_struct_attr = c_attr_name_sortfield
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_equip_general
+      pi_struct_attr = c_attr_name_abcindic
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_equip_general
+      pi_struct_attr = c_attr_name_work_ctr
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_equip_general
+      pi_struct_attr = c_attr_name_consttype
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CLEAR ls_attr_def.
+  ls_attr_def-key = c_attr_name_warranty_set.
+  ls_attr_def-data_type
+    = /otx/rm_wsc_if_xecm_service=>c_data_type_group.
+  ls_attr_def-multivalue = abap_true.
+  ls_disp_name-name = ls_attr_def-key.
+  ls_disp_name-lang = 'E'.
+  APPEND ls_disp_name TO ls_attr_def-disp_names.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_bgmkobj
+      pi_struct_attr = 'GAART'
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def_2.
+  ls_attr_def_2-key = c_attr_name_warranty_type.
+  MOVE-CORRESPONDING ls_attr_def_2 TO ls_sattr_def.         "#EC ENHOK
+  APPEND ls_sattr_def TO ls_attr_def-subattrs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_t790g_t
+      pi_struct_attr = 'KTEXT'
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def_2.
+  ls_attr_def_2-key = c_attr_name_warranty_txt.
+  MOVE-CORRESPONDING ls_attr_def_2 TO ls_sattr_def.         "#EC ENHOK
+  APPEND ls_sattr_def TO ls_attr_def-subattrs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_bgmkobj
+      pi_struct_attr = 'MGANR'
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def_2.
+  ls_attr_def_2-key = c_attr_name_warranty_number.
+  MOVE-CORRESPONDING ls_attr_def_2 TO ls_sattr_def.         "#EC ENHOK
+  APPEND ls_sattr_def TO ls_attr_def-subattrs.
+  APPEND ls_attr_def TO pet_attr_defs.
+
+  CALL METHOD get_dict_attr_def
+    EXPORTING
+      pi_struct      = ls_equi
+      pi_struct_attr = c_attr_name_equnr
+      pi_disp_lang   = pi_disp_lang
+    IMPORTING
+      pes_attr_def   = ls_attr_def.
+  APPEND ls_attr_def TO pet_attr_defs.
+ENDMETHOD.

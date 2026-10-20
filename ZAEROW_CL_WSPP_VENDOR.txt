@@ -1,0 +1,308 @@
+*----------- Include : ZAEROW_CL_WSPP_VENDOR=========CCDEF
+*"* use this source file for any type of declarations (class
+*"* definitions, interfaces or type declarations) you need for
+*"* components in the private section
+
+*----------- Include : ZAEROW_CL_WSPP_VENDOR=========CCMAC
+*"* use this source file for any macro definitions you need
+*"* in the implementation part of the class
+
+*----------- Include : ZAEROW_CL_WSPP_VENDOR=========CCIMP
+*"* use this source file for the definition and implementation of
+*"* local helper classes, interface definitions and type
+*"* declarations
+
+*----------- Include : ZAEROW_CL_WSPP_VENDOR=========CU
+class ZAEROW_CL_WSPP_VENDOR definition
+  public
+  inheriting from /OTX/RM_GEN_PP_CL_BO
+  final
+  create public .
+
+public section.
+
+  methods GET_DATA
+    redefinition .
+  methods GET_PROPERTY_DEFS
+    redefinition .
+  methods GET_STRUCT_NAME
+    redefinition .
+*----------- Include : ZAEROW_CL_WSPP_VENDOR=========CO
+protected section.
+*----------- Include : ZAEROW_CL_WSPP_VENDOR=========CI
+private section.
+
+  data MS_DATA type ZAEROW_RMPROC_S_VENDOR .
+  data CO_BO_TYPE_BUPA type STRING value 'BUS1006' ##NO_TEXT.
+
+  methods GET_EXT_SYS_FROM_BO_TYPE
+    importing
+      !PI_BO_TYPE type STRING
+    returning
+      value(PR_EXTERNAL_SYSTEM_ID) type STRING
+    raising
+      /OTX/CX_RM_WSCI_WSPROVIDER .
+*----------- Include : ZAEROW_CL_WSPP_VENDOR=========CP
+class-pool .
+*"* class pool for class ZAEROW_CL_WSPP_VENDOR
+
+*"* local type definitions
+include ZAEROW_CL_WSPP_VENDOR=========ccdef.
+
+*"* class ZAEROW_CL_WSPP_VENDOR definition
+*"* public declarations
+  include ZAEROW_CL_WSPP_VENDOR=========cu.
+*"* protected declarations
+  include ZAEROW_CL_WSPP_VENDOR=========co.
+*"* private declarations
+  include ZAEROW_CL_WSPP_VENDOR=========ci.
+endclass. "ZAEROW_CL_WSPP_VENDOR definition
+
+*"* macro definitions
+include ZAEROW_CL_WSPP_VENDOR=========ccmac.
+*"* local class implementation
+include ZAEROW_CL_WSPP_VENDOR=========ccimp.
+
+class ZAEROW_CL_WSPP_VENDOR implementation.
+*"* method's implementations
+  include methods.
+endclass. "ZAEROW_CL_WSPP_VENDOR implementation
+
+*----------- Include : ZAEROW_CL_WSPP_VENDOR=========CT
+*"* dummy include to reduce generation dependencies between
+*"* class ZAEROW_CL_WSPP_VENDOR and it's users.
+*"* touched if any type reference has been changed
+*----------- Include : ZAEROW_CL_WSPP_VENDOR=========CM001
+  METHOD GET_EXT_SYS_FROM_BO_TYPE.
+
+  DATA:
+  ls_elib_info           TYPE  /otx/rm_telib,
+  lv_elib_with_quotes    TYPE string,
+  lv_error_message       TYPE string,
+  l_wsci_bor_type        TYPE swo_objtyp,
+  lv_elib_id             TYPE /otx/rmcon_de_les_id,
+  ls_cx_rm_wdgen         TYPE REF TO /otx/cx_rm_wdgen.
+
+  l_wsci_bor_type = pi_bo_type.
+
+  " Get elib ID
+  TRY.
+    lv_elib_id = /otx/rm_wdgen_widget_config=>get_elib_id_from_bo_type( l_wsci_bor_type ).
+  CATCH /otx/cx_rm_wdgen INTO ls_cx_rm_wdgen.
+    lv_error_message = ls_cx_rm_wdgen->get_text( ).
+    RAISE EXCEPTION TYPE /otx/cx_rm_wsci_wsprovider
+      EXPORTING m_error_text = lv_error_message.
+  ENDTRY.
+
+  " Get external sytem ID
+  SELECT SINGLE * FROM /otx/rm_telib INTO ls_elib_info
+    WHERE les_id = lv_elib_id.
+  IF sy-subrc <> 0.
+    lv_error_message = text-001. " elib not found
+    CONCATENATE '"' lv_elib_id '"' INTO lv_elib_with_quotes. "#EC NOTEXT
+    REPLACE ALL OCCURRENCES OF '$ELIB' "#EC NOTEXT
+      IN lv_error_message WITH lv_elib_with_quotes.
+    RAISE EXCEPTION TYPE /otx/cx_rm_wsci_wsprovider
+      EXPORTING m_error_text = lv_error_message.
+  ENDIF.
+
+  pr_external_system_id = ls_elib_info-external_sys_id.
+
+  ENDMETHOD.
+*----------- Include : ZAEROW_CL_WSPP_VENDOR=========CM002
+  METHOD GET_DATA.
+
+  DATA:
+    l_vendor_number         TYPE lifnr,
+    l_vendor_number_display TYPE lifnr,
+    ls_vendor               TYPE lfa1,
+    lt_purch_org_data       TYPE TABLE OF lfm1,
+    ls_purch_org_data       TYPE lfm1,
+    l_bus_partner_guid      TYPE bu_partner_guid,
+    l_bus_partner_number    TYPE bu_partner,
+    l_landx                 TYPE t005t-landx,
+    lh_bp_vendor            TYPE REF TO cvi_ka_bp_vendor,
+    ls_t024e                TYPE t024e,
+    l_rc                    TYPE sy-subrc,
+    ls_relation             TYPE /otx/rm_wsci_s_busobj,
+    ls_wsci_bor             TYPE /otx/rm_wsci_s_bor,
+    l_long_error_text       TYPE string,
+    l_ext_sys               TYPE string,
+    l_error_text            TYPE string.
+
+    CLEAR me->ms_data.
+
+    " Get the details of vendor
+    l_vendor_number = pis_bor-id.
+    CLEAR ls_vendor.
+    CALL FUNCTION 'WY_LFA1_SINGLE_READ'
+      EXPORTING
+        pi_lifnr         = l_vendor_number
+      IMPORTING
+        po_lfa1          = ls_vendor
+      EXCEPTIONS
+        no_records_found = 1
+        internal_error   = 2
+        OTHERS           = 3.
+
+    IF ls_vendor-name3 IS NOT INITIAL.
+      "#CONCATENATE ls_vendor-name1 '(' ls_vendor-name3 ')'  INTO ls_vendor-name1.
+    ENDIF.
+    IF sy-subrc NE 0.
+      IF sy-msgid IS NOT INITIAL.
+        MESSAGE ID sy-msgid TYPE sy-msgty NUMBER sy-msgno
+                WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4
+                INTO l_long_error_text.
+      ENDIF.
+
+      l_error_text = 'Could not read data of Vendor with number ='. "#EC NOTEXT
+      CONCATENATE l_error_text ' ' pis_bor-id ':' l_long_error_text INTO l_error_text RESPECTING BLANKS.
+      RAISE EXCEPTION TYPE /otx/cx_rm_wsci_wsprovider
+        EXPORTING
+          m_error_text = l_error_text.
+    ENDIF.
+
+    MOVE-CORRESPONDING ls_vendor TO me->ms_data.
+
+    " Localize country of vendor
+     CALL FUNCTION 'BKK_BKKA_COUNTRY_GET'
+      EXPORTING
+        i_land1       = ls_vendor-land1
+     IMPORTING
+       e_landx       = l_landx
+       e_rc          = l_rc.
+
+    IF l_rc <> 0.
+      l_error_text = 'Could not localize country for country ='. "#EC NOTEXT
+      CONCATENATE l_error_text ' ' ls_vendor-land1 INTO l_error_text RESPECTING BLANKS.
+      RAISE EXCEPTION TYPE /otx/cx_rm_wsci_wsprovider
+      EXPORTING
+        m_error_text = l_error_text.
+    ENDIF.
+    me->ms_data-landx = l_landx.
+
+    " Get purchasing organization data
+    CLEAR lt_purch_org_data.
+    CALL FUNCTION 'LFM1_GENERIC_READ_LIFNR'
+      EXPORTING
+        i_lifnr   = l_vendor_number
+      TABLES
+        o_lfm1    = lt_purch_org_data
+      EXCEPTIONS
+        not_found = 1 ##FM_SUBRC_OK
+        OTHERS    = 2.
+
+
+   READ TABLE lt_purch_org_data INTO ls_purch_org_data INDEX 1.
+   me->ms_data-purorg = ls_purch_org_data-ekorg.
+
+   IF ls_purch_org_data-ekorg IS NOT INITIAL.
+    CLEAR ls_t024e.
+    CALL FUNCTION 'T024E_SINGLE_READ'
+         EXPORTING
+          kzrfb             = ' '
+           t024e_ekorg      = ls_purch_org_data-ekorg
+        IMPORTING
+          wt024e            = ls_t024e
+        EXCEPTIONS
+          not_found         = 1
+          OTHERS            = 2.
+   ENDIF.
+
+   IF ls_t024e IS NOT INITIAL AND sy-subrc NE 1.
+      me->ms_data-purorg_txt = ls_t024e-ekotx.
+   ENDIF.
+
+    " Remove trailing zeros from vendor number
+   CALL FUNCTION 'CONVERSION_EXIT_ALPHA_OUTPUT'
+      EXPORTING
+        input  = l_vendor_number
+      IMPORTING
+        output = l_vendor_number_display.
+     me->ms_data-lifnr = l_vendor_number_display.
+
+
+    " Try to get assigned business partner
+    "lh_bp_vendor = cvi_ka_bp_vendor=>get_instance( ).
+    "l_bus_partner_guid = lh_bp_vendor->get_assigned_bp_for_vendor( i_vendor = l_vendor_number ).
+
+   IF l_bus_partner_guid IS NOT INITIAL.
+      l_bus_partner_number = lh_bp_vendor->get_partner_id( i_partner_guid = l_bus_partner_guid ).
+   ENDIF.
+
+   " Remove trailing zeros from number
+   CALL FUNCTION 'CONVERSION_EXIT_ALPHA_OUTPUT'
+      EXPORTING
+        input  = l_bus_partner_number
+      IMPORTING
+        output = l_bus_partner_number.
+
+   "  Append Business Partner as parent
+   IF  l_bus_partner_number IS NOT INITIAL.
+      ls_relation-id                  = l_bus_partner_number.
+      ls_relation-type                = me->co_bo_type_bupa.
+      " Get external sytem id
+      l_ext_sys = me->get_ext_sys_from_bo_type( me->co_bo_type_bupa ).
+      ls_relation-external_system_id = l_ext_sys.
+      APPEND ls_relation TO pet_children_ext.
+
+      ls_wsci_bor-id    = l_bus_partner_number.
+      ls_wsci_bor-type  = me->co_bo_type_bupa.
+      APPEND ls_wsci_bor TO pet_children.
+   ENDIF.
+
+
+
+
+   pe_data = me->ms_data.
+
+  ENDMETHOD.
+*----------- Include : ZAEROW_CL_WSPP_VENDOR=========CM003
+  method GET_PROPERTY_DEFS.
+      DATA:
+       ls_relation            TYPE /otx/rm_wsci_s_busobj_type,
+       l_ext_sys              TYPE string,
+       l_wsci_bor_type        TYPE swo_objtyp.
+
+  CALL METHOD super->get_property_defs
+    EXPORTING
+      pi_disp_lang                   = pi_disp_lang
+      pi_bo_type                     = pi_bo_type
+    IMPORTING
+      pet_attr_defs                  = pet_attr_defs
+      pet_allowed_parent_types       = pet_allowed_parent_types
+      pet_allowed_child_types        = pet_allowed_child_types
+      pet_allowed_ident_busobj_types = pet_allowed_ident_busobj_types
+      pet_allowed_parent_types_ext   = pet_allowed_parent_types_ext
+      pet_allowed_child_types_ext    = pet_allowed_child_types_ext.
+
+  " Add business partner as allowed child and parent relation
+  "ls_relation-type = me->co_bo_type_bupa. " Business Partner
+
+  " Get external sytem id
+  "l_ext_sys = me->get_ext_sys_from_bo_type( me->co_bo_type_bupa ).
+
+  ls_relation-external_system_id = l_ext_sys.
+  "APPEND ls_relation TO pet_allowed_parent_types_ext.
+  "APPEND ls_relation TO pet_allowed_child_types_ext.
+
+  "l_wsci_bor_type = me->co_bo_type_bupa. " Business Partner
+  "APPEND l_wsci_bor_type TO pet_allowed_child_types.
+  "APPEND l_wsci_bor_type TO pet_allowed_parent_types.
+
+  DELETE ADJACENT DUPLICATES FROM pet_allowed_child_types_ext.
+  DELETE ADJACENT DUPLICATES FROM pet_allowed_parent_types_ext.
+  endmethod.
+*----------- Include : ZAEROW_CL_WSPP_VENDOR=========CM004
+  METHOD GET_STRUCT_NAME.
+
+  DATA:
+      lo_str_desc  TYPE REF TO cl_abap_structdescr,
+      lv_type_name TYPE        ddobjname.
+
+  lo_str_desc ?= cl_abap_structdescr=>describe_by_data( me->ms_data ).
+  lv_type_name = lo_str_desc->get_relative_name( ).
+
+  pr_struct_name = lv_type_name.
+
+  ENDMETHOD.
